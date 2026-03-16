@@ -30,6 +30,27 @@
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
                     }
                 }
             }
@@ -92,6 +113,25 @@
             console.error("Erreur lors de l'initialisation de Firebase:", error);
         }
 
+        // --- CONFIGURATION EMAILJS ---
+        const EMAILJS_CONFIG = {
+            serviceId: "VOTRE_SERVICE_ID", 
+            templateIdRegister: "VOTRE_TEMPLATE_ID_INSCRIPTION", 
+            templateIdPayment: "VOTRE_TEMPLATE_ID_PAIEMENT", 
+            publicKey: "VOTRE_PUBLIC_KEY" 
+        };
+
+        const sendEmailNotification = async (type, params) => {
+            if (EMAILJS_CONFIG.serviceId === "VOTRE_SERVICE_ID") return; 
+            const templateId = type === 'register' ? EMAILJS_CONFIG.templateIdRegister : EMAILJS_CONFIG.templateIdPayment;
+            try {
+                await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ service_id: EMAILJS_CONFIG.serviceId, template_id: templateId, user_id: EMAILJS_CONFIG.publicKey, template_params: params })
+                });
+            } catch (error) { console.error("Erreur email:", error); }
+        };
+
         // --- ICONES SVGS ---
         const IconTrophy = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
         const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
@@ -133,23 +173,35 @@
         );
 
         const HomeView = ({ setView }) => (
-            <div className="text-center py-20">
-                <div className="inline-block p-4 rounded-full bg-padel/10 text-padel mb-6">
-                    <IconTrophy size={48} />
-                </div>
-                <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6">
-                    Tournoi Open <br/><span className="text-padel">Classement Intégral</span>
-                </h1>
-                <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-                    Inscrivez votre paire, affrontez les meilleurs, et jouez jusqu'au bout ! Le système gère les arbres montants, descendants, et tous les matchs de classement.
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center gap-4">
-                    <button onClick={() => setView('register')} className="bg-padel hover:bg-padel-dark text-dark-bg font-bold py-4 px-8 rounded-lg text-lg uppercase tracking-wide transition-all shadow-[0_0_20px_rgba(190,242,100,0.3)] hover:shadow-[0_0_30px_rgba(190,242,100,0.5)]">
-                        S'inscrire
-                    </button>
-                    <button onClick={() => setView('live')} className="bg-dark-card border border-dark-border hover:border-gray-500 text-white font-bold py-4 px-8 rounded-lg text-lg uppercase tracking-wide transition-all">
-                        Voir les matchs en direct
-                    </button>
+            <div className="relative text-center py-20 lg:py-32 overflow-hidden">
+                <div className="absolute top-0 left-1/4 w-72 h-72 bg-padel/20 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-blob"></div>
+                <div className="absolute top-0 right-1/4 w-72 h-72 bg-blue-500/20 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-blob" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute -bottom-8 left-1/3 w-72 h-72 bg-purple-500/20 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-blob" style={{ animationDelay: '4s' }}></div>
+
+                <div className="relative z-10">
+                    <div className="inline-block p-5 rounded-full bg-dark-card border border-padel/30 text-padel mb-8 animate-float shadow-[0_0_30px_rgba(190,242,100,0.2)]">
+                        <IconTrophy size={56} />
+                    </div>
+                    
+                    <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                        Espace Compétition <br/>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-padel to-padel-dark">
+                            TC Mâcon Padel
+                        </span>
+                    </h1>
+                    
+                    <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto opacity-0 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                        Inscrivez votre paire, suivez les matchs en direct et consultez les classements de tous nos tournois.
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+                        <button onClick={() => setView('register')} className="bg-padel hover:bg-padel-dark text-dark-bg font-black py-4 px-8 rounded-xl text-lg uppercase tracking-wide transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-[0_0_20px_rgba(190,242,100,0.3)] hover:shadow-[0_0_40px_rgba(190,242,100,0.6)]">
+                            S'inscrire
+                        </button>
+                        <button onClick={() => setView('live')} className="bg-dark-card border border-dark-border hover:border-padel/50 hover:bg-dark-card/80 text-white font-bold py-4 px-8 rounded-xl text-lg uppercase tracking-wide transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg">
+                            Voir les matchs en direct
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -157,10 +209,8 @@
         const RegisterView = ({ tournaments, updateTournaments, setView }) => {
             const openTournaments = tournaments.filter(t => t.status === 'open');
             const [selectedTourneyId, setSelectedTourneyId] = useState(openTournaments[0]?.id || '');
-            const [p1, setP1] = useState('');
-            const [l1, setL1] = useState('');
-            const [p2, setP2] = useState('');
-            const [l2, setL2] = useState('');
+            const [p1, setP1] = useState(''); const [l1, setL1] = useState('');
+            const [p2, setP2] = useState(''); const [l2, setL2] = useState('');
             const [teamEmail, setTeamEmail] = useState('');
             const [success, setSuccess] = useState(false);
 
@@ -175,22 +225,12 @@
                 if(!p1 || !p2 || !l1 || !l2 || !teamEmail || !activeTourney || isPastDeadline) return;
                 
                 const newTeam = {
-                    id: Date.now(),
-                    name: `${p1} / ${p2}`,
-                    l1: l1,
-                    l2: l2,
-                    email: teamEmail,
-                    paid: false
+                    id: Date.now(), name: `${p1} / ${p2}`, l1: l1, l2: l2, email: teamEmail, paid: false
                 };
                 
-                updateTournaments(prev => prev.map(t => 
-                    t.id === activeTourney.id ? { ...t, teams: [...t.teams, newTeam] } : t
-                ));
-
-                if (activeTourney.paymentLink && activeTourney.paymentLink.trim() !== '') {
-                    window.open(activeTourney.paymentLink, '_blank');
-                }
-
+                updateTournaments(prev => prev.map(t => t.id === activeTourney.id ? { ...t, teams: [...t.teams, newTeam] } : t));
+                sendEmailNotification('register', { to_email: teamEmail, team_name: newTeam.name, tourney_name: activeTourney.name, price: activeTourney.price });
+                if (activeTourney.paymentLink && activeTourney.paymentLink.trim() !== '') window.open(activeTourney.paymentLink, '_blank');
                 setSuccess(true);
             };
 
@@ -207,22 +247,14 @@
             if (success) {
                 return (
                     <div className="max-w-md mx-auto mt-12 glass-panel p-8 rounded-2xl text-center border-padel">
-                        <div className="w-16 h-16 bg-padel rounded-full flex items-center justify-center text-dark-bg mx-auto mb-4">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
+                        <div className="w-16 h-16 bg-padel rounded-full flex items-center justify-center text-dark-bg mx-auto mb-4"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg></div>
                         <h2 className="text-2xl font-bold mb-2 text-white">Inscription Pré-validée !</h2>
                         <p className="text-gray-400 mb-4">Votre équipe est enregistrée pour <strong>{activeTourney.name}</strong>.</p>
-                        <p className="text-padel text-sm font-bold mb-4">
-                            Un e-mail de confirmation de pré-inscription a été envoyé à {teamEmail}.
-                        </p>
+                        <p className="text-padel text-sm font-bold mb-4">Un e-mail de confirmation de pré-inscription a été envoyé à {teamEmail}.</p>
                         {activeTourney.paymentLink ? (
-                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">
-                                Un nouvel onglet s'est ouvert pour le paiement. Votre inscription sera définitive une fois le paiement de <strong>{activeTourney.price}€</strong> validé par l'organisateur.
-                            </p>
+                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Un nouvel onglet s'est ouvert pour le paiement. Votre inscription sera définitive une fois le paiement de <strong>{activeTourney.price}€</strong> validé par l'organisateur.</p>
                         ) : (
-                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">
-                                Veuillez procéder au paiement de <strong>{activeTourney.price}€</strong> auprès de l'organisateur pour valider définitivement votre place.
-                            </p>
+                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Veuillez procéder au paiement de <strong>{activeTourney.price}€</strong> auprès de l'organisateur pour valider définitivement votre place.</p>
                         )}
                         <button onClick={() => setView('live')} className="mt-6 text-padel underline text-sm">Voir les tournois</button>
                     </div>
@@ -234,81 +266,42 @@
                     <div className="glass-panel p-8 rounded-2xl">
                         <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Inscription</h2>
                         <p className="text-gray-400 mb-6">Inscrivez votre paire au tournoi de votre choix.</p>
-
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Choix du Tournoi</label>
-                                <select 
-                                    value={selectedTourneyId} 
-                                    onChange={e => setSelectedTourneyId(e.target.value)}
-                                    className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
-                                >
-                                    {openTournaments.map(t => (
-                                        <option key={t.id} value={t.id}>{t.name} ({t.teams.length}/{t.maxTeams} équipes)</option>
-                                    ))}
+                                <select value={selectedTourneyId} onChange={e => setSelectedTourneyId(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors">
+                                    {openTournaments.map(t => <option key={t.id} value={t.id}>{t.name} ({t.teams.length}/{t.maxTeams} équipes)</option>)}
                                 </select>
                             </div>
-
                             {activeTourney && (
                                 <div className="bg-dark-card border border-dark-border rounded-lg p-4 text-sm flex flex-col gap-2">
-                                    <div className="flex justify-between items-center border-b border-dark-border pb-2">
-                                        <span className="text-gray-400">Date du tournoi</span>
-                                        <span className="text-white font-bold">{new Date(activeTourney.date).toLocaleDateString('fr-FR')}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center border-b border-dark-border pb-2">
-                                        <span className="text-gray-400">Limite d'inscription</span>
-                                        <span className={`font-bold ${isPastDeadline ? 'text-red-400' : 'text-white'}`}>
-                                            {new Date(activeTourney.registrationDeadline).toLocaleDateString('fr-FR')}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400">Prix par paire</span>
-                                        <span className="text-padel font-bold text-lg">{activeTourney.price} €</span>
-                                    </div>
+                                    <div className="flex justify-between items-center border-b border-dark-border pb-2"><span className="text-gray-400">Date du tournoi</span><span className="text-white font-bold">{new Date(activeTourney.date).toLocaleDateString('fr-FR')}</span></div>
+                                    <div className="flex justify-between items-center border-b border-dark-border pb-2"><span className="text-gray-400">Limite d'inscription</span><span className={`font-bold ${isPastDeadline ? 'text-red-400' : 'text-white'}`}>{new Date(activeTourney.registrationDeadline).toLocaleDateString('fr-FR')}</span></div>
+                                    <div className="flex justify-between items-center"><span className="text-gray-400">Prix par paire</span><span className="text-padel font-bold text-lg">{activeTourney.price} €</span></div>
                                 </div>
                             )}
-
                             {isFull ? (
-                                <div className="bg-red-900/30 border border-red-800 text-red-300 p-4 rounded-lg text-center font-medium mt-4">
-                                    Désolé, ce tournoi est déjà complet !
-                                </div>
+                                <div className="bg-red-900/30 border border-red-800 text-red-300 p-4 rounded-lg text-center font-medium mt-4">Désolé, ce tournoi est déjà complet !</div>
                             ) : isPastDeadline ? (
-                                <div className="bg-red-900/30 border border-red-800 text-red-300 p-4 rounded-lg text-center font-medium mt-4">
-                                    Les inscriptions pour ce tournoi sont clôturées depuis le {new Date(activeTourney.registrationDeadline).toLocaleDateString('fr-FR')}.
-                                </div>
+                                <div className="bg-red-900/30 border border-red-800 text-red-300 p-4 rounded-lg text-center font-medium mt-4">Les inscriptions pour ce tournoi sont clôturées depuis le {new Date(activeTourney.registrationDeadline).toLocaleDateString('fr-FR')}.</div>
                             ) : (
                                 <>
                                     <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
                                         <label className="block text-sm font-bold text-padel uppercase tracking-wider">Joueur 1</label>
-                                        <input type="text" required value={p1} onChange={e=>setP1(e.target.value)}
-                                            className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
-                                            placeholder="Nom complet" />
-                                        <input type="text" required value={l1} onChange={e=>setL1(e.target.value)}
-                                            className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
-                                            placeholder="Numéro de licence" />
+                                        <input type="text" required value={p1} onChange={e=>setP1(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Nom complet" />
+                                        <input type="text" required value={l1} onChange={e=>setL1(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Numéro de licence" />
                                     </div>
                                     <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
                                         <label className="block text-sm font-bold text-padel uppercase tracking-wider">Joueur 2</label>
-                                        <input type="text" required value={p2} onChange={e=>setP2(e.target.value)}
-                                            className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
-                                            placeholder="Nom complet" />
-                                        <input type="text" required value={l2} onChange={e=>setL2(e.target.value)}
-                                            className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
-                                            placeholder="Numéro de licence" />
+                                        <input type="text" required value={p2} onChange={e=>setP2(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Nom complet" />
+                                        <input type="text" required value={l2} onChange={e=>setL2(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Numéro de licence" />
                                     </div>
                                     <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
                                         <label className="block text-sm font-bold text-padel uppercase tracking-wider">Contact de l'équipe</label>
-                                        <input type="email" required value={teamEmail} onChange={e=>setTeamEmail(e.target.value)}
-                                            className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
-                                            placeholder="Adresse e-mail" />
+                                        <input type="email" required value={teamEmail} onChange={e=>setTeamEmail(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Adresse e-mail" />
                                     </div>
-                                    
                                     <div className="pt-4">
-                                        <button type="submit" disabled={!p1 || !p2 || !l1 || !l2 || !teamEmail}
-                                            className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-bold py-4 rounded-lg flex justify-center items-center space-x-2 transition-all disabled:opacity-50">
-                                            <IconCreditCard />
-                                            <span>S'inscrire {activeTourney.paymentLink ? "& Payer en ligne" : ""}</span>
-                                        </button>
+                                        <button type="submit" disabled={!p1 || !p2 || !l1 || !l2 || !teamEmail} className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-bold py-4 rounded-lg flex justify-center items-center space-x-2 transition-all disabled:opacity-50"><IconCreditCard /><span>S'inscrire {activeTourney.paymentLink ? "& Payer en ligne" : ""}</span></button>
                                         <p className="text-xs text-center text-gray-500 mt-3">Paiement sécurisé. Non remboursable à moins de 48h du tournoi.</p>
                                     </div>
                                 </>
@@ -347,14 +340,10 @@
                         </div>
                     </div>
                     {match.score && match.score !== 'BYE' && (
-                        <div className="text-center text-xs font-mono py-1 border-t border-dark-border bg-dark-card text-gray-300 font-bold">
-                            {match.score}
-                        </div>
+                        <div className="text-center text-xs font-mono py-1 border-t border-dark-border bg-dark-card text-gray-300 font-bold">{match.score}</div>
                     )}
                     {match.status === 'playing' && match.courtId && (
-                        <div className="text-center text-[10px] uppercase tracking-widest py-1 border-t border-dark-border bg-padel/10 text-padel font-bold">
-                            Terrain {match.courtId}
-                        </div>
+                        <div className="text-center text-[10px] uppercase tracking-widest py-1 border-t border-dark-border bg-padel/10 text-padel font-bold">Terrain {match.courtId}</div>
                     )}
                 </div>
             );
@@ -381,9 +370,7 @@
                         {rounds.map((roundMatches, rIdx) => (
                             <div key={rIdx} className="flex flex-col justify-around gap-6 relative">
                                 {roundMatches.map(match => (
-                                    <div key={match.id} className="relative z-10">
-                                        <BracketNode match={match} />
-                                    </div>
+                                    <div key={match.id} className="relative z-10"><BracketNode match={match} /></div>
                                 ))}
                             </div>
                         ))}
@@ -392,31 +379,8 @@
             );
         };
 
-        const UpcomingMatches = ({ activeTourney }) => {
-            const readyMatches = activeTourney.matches.filter(m => m.status === 'ready');
-            const playingMatches = activeTourney.matches.filter(m => m.status === 'playing');
-            
-            if (readyMatches.length === 0) return null;
-
-            const now = Date.now();
-            const courtFinishTimes = playingMatches
-                .map(m => (m.startTime || now) + 45 * 60000)
-                .sort((a, b) => a - b);
-            
-            while (courtFinishTimes.length < activeTourney.numCourts) {
-                courtFinishTimes.unshift(now);
-            }
-
-            const estimateStart = (idx) => {
-                const baseTime = courtFinishTimes[idx % activeTourney.numCourts];
-                const addedRounds = Math.floor(idx / activeTourney.numCourts);
-                const est = baseTime + (addedRounds * 45 * 60000);
-                
-                if (est <= now + 60000) return "Imminent";
-
-                const d = new Date(est);
-                return `${d.getHours().toString().padStart(2, '0')}h${d.getMinutes().toString().padStart(2, '0')}`;
-            };
+        const UpcomingMatches = ({ readySchedule }) => {
+            if (readySchedule.length === 0) return null;
 
             return (
                 <div className="mb-12">
@@ -424,39 +388,135 @@
                         <IconClock /> <span>Prochains matchs en attente</span>
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {readyMatches.map((m, idx) => (
-                            <div key={m.id} className="glass-panel p-4 rounded-xl border border-dark-border flex flex-col justify-between">
-                                <div className="flex justify-between items-start mb-3">
-                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{m.bracketName} - {m.title}</span>
-                                    <span className="bg-yellow-500/20 text-yellow-500 text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap">
-                                        Prévu ~ {estimateStart(idx)}
-                                    </span>
+                        {readySchedule.map((m) => {
+                            const d = new Date(m.estStart);
+                            const timeStr = m.estStart <= Date.now() + 60000 ? "Imminent" : `${d.getHours().toString().padStart(2, '0')}h${d.getMinutes().toString().padStart(2, '0')}`;
+                            return (
+                                <div key={m.id} className="glass-panel p-4 rounded-xl border border-dark-border flex flex-col justify-between">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{m.bracketName} - {m.title}</span>
+                                        <span className="bg-yellow-500/20 text-yellow-500 text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap">
+                                            Prévu ~ {timeStr}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="font-bold text-white truncate">{m.team1?.name}</div>
+                                        <div className="text-xs text-gray-500 font-black px-2">VS</div>
+                                        <div className="font-bold text-white truncate">{m.team2?.name}</div>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="font-bold text-white truncate">{m.team1?.name}</div>
-                                    <div className="text-xs text-gray-500 font-black px-2">VS</div>
-                                    <div className="font-bold text-white truncate">{m.team2?.name}</div>
-                                </div>
-                            </div>
-                        ))}
+                            )
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
+        const GlobalSchedule = ({ schedule }) => {
+            if (schedule.length === 0) return null;
+            return (
+                <div className="mt-16 border-t border-dark-border pt-12">
+                    <h3 className="text-2xl font-black text-white mb-6 flex items-center gap-2">
+                        <IconClock /> <span>Échéancier Global du Tournoi</span>
+                    </h3>
+                    <p className="text-gray-400 mb-6 text-sm">Cet échéancier prévisionnel s'ajuste en temps réel en fonction du temps réel de chaque match en cours sur les terrains.</p>
+                    
+                    <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto">
+                        <table className="w-full text-left text-sm text-gray-300">
+                            <thead className="bg-dark-card border-b border-dark-border text-xs uppercase text-gray-500">
+                                <tr>
+                                    <th className="p-4 w-32 whitespace-nowrap">Heure est.</th>
+                                    <th className="p-4 min-w-[200px]">Phase du Tournoi</th>
+                                    <th className="p-4">Équipe 1</th>
+                                    <th className="p-4 text-center">VS</th>
+                                    <th className="p-4">Équipe 2</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-dark-border">
+                                {schedule.map(m => {
+                                    const d = new Date(m.estStart);
+                                    const isImminent = m.estStart <= Date.now() + 60000;
+                                    const timeStr = isImminent ? "Imminent" : `${d.getHours().toString().padStart(2, '0')}h${d.getMinutes().toString().padStart(2, '0')}`;
+                                    
+                                    return (
+                                        <tr key={m.id} className="hover:bg-dark-card/50 transition-colors">
+                                            <td className="p-4 font-bold text-yellow-500 whitespace-nowrap">
+                                                {isImminent && <span className="w-2 h-2 inline-block rounded-full bg-yellow-500 animate-pulse mr-2"></span>}
+                                                {timeStr}
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="font-bold text-white">{m.bracketName}</div>
+                                                <div className="text-xs text-gray-500">{m.title}</div>
+                                            </td>
+                                            <td className={`p-4 font-medium truncate max-w-[200px] ${m.team1 ? 'text-white' : 'text-gray-500 italic'}`}>{m.team1 ? m.team1.name : 'À déterminer'}</td>
+                                            <td className="p-4 text-center text-xs font-black text-gray-600">VS</td>
+                                            <td className={`p-4 font-medium truncate max-w-[200px] ${m.team2 ? 'text-white' : 'text-gray-500 italic'}`}>{m.team2 ? m.team2.name : 'À déterminer'}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             );
         };
 
         const LiveView = ({ tournaments, activeLiveId, setActiveLiveId }) => {
-            const activeTourney = tournaments.find(t => t.id === activeLiveId) || tournaments[0];
+            const [tick, setTick] = useState(0);
             
+            // Forcer un rafraîchissement toutes les 30 secondes pour mettre à jour l'échéancier
+            useEffect(() => {
+                const timer = setInterval(() => setTick(t => t + 1), 30000);
+                return () => clearInterval(timer);
+            }, []);
+
+            const activeTourney = tournaments.find(t => t.id === activeLiveId) || tournaments[0];
             if (!activeTourney) return <div className="text-center py-20 text-gray-400">Aucun tournoi disponible.</div>;
 
-            const bracketGroups = [];
-            if (activeTourney.matches) {
+            let bracketGroups = [];
+            let fullSchedule = [];
+            
+            if (activeTourney.status === 'started' && activeTourney.matches) {
+                // Groupes pour l'affichage visuel
                 activeTourney.matches.forEach(m => {
                     if (!bracketGroups.find(g => g.id === m.bracket)) {
                         bracketGroups.push({ id: m.bracket, name: m.bracketName });
                     }
                 });
+
+                // Calcul intelligent de l'échéancier prévisionnel global
+                const now = Date.now();
+                const playingMatches = activeTourney.matches.filter(m => m.status === 'playing');
+                const upcomingMatches = activeTourney.matches.filter(m => m.status === 'ready' || m.status === 'pending')
+                    .sort((a, b) => {
+                        if (a.round !== b.round) return a.round - b.round;
+                        if (a.bracket !== b.bracket) {
+                            if(a.bracket === 'main') return -1;
+                            if(b.bracket === 'main') return 1;
+                            return a.bracket.localeCompare(b.bracket);
+                        }
+                        return a.matchIdx - b.matchIdx;
+                    });
+
+                // On initialise le temps de dispo de chaque terrain avec l'heure de fin estimée des matchs en cours
+                let courtTimes = playingMatches.map(m => Math.max(now, (m.startTime || now) + 45 * 60000));
+                // Les terrains vides sont dispos "maintenant"
+                while (courtTimes.length < activeTourney.numCourts) {
+                    courtTimes.push(now);
+                }
+                courtTimes.sort((a, b) => a - b); // On trie du terrain dispo le plus tôt au plus tard
+
+                upcomingMatches.forEach(m => {
+                    const estStart = courtTimes[0]; // On prend le 1er terrain dispo
+                    fullSchedule.push({ ...m, estStart });
+                    // On met à jour la dispo de ce terrain (il sera pris 45min de plus)
+                    courtTimes[0] = estStart + 45 * 60000; 
+                    courtTimes.sort((a, b) => a - b); // On re-trie
+                });
             }
+
+            // On extrait uniquement les matchs "Ready" (dont on connait les équipes) pour les afficher en haut
+            const readySchedule = fullSchedule.filter(m => m.status === 'ready');
 
             return (
                 <div className="space-y-4">
@@ -465,47 +525,33 @@
                             <h2 className="text-3xl font-black uppercase tracking-tight text-white">L'Arbre du Tournoi</h2>
                             <p className="text-padel font-medium">Progression en temps réel de tous les classements</p>
                         </div>
-                        
                         <div className="w-full md:w-auto">
                             <label className="block text-xs uppercase text-gray-500 font-bold mb-1">Sélectionner un tournoi</label>
-                            <select 
-                                value={activeLiveId}
-                                onChange={e => setActiveLiveId(Number(e.target.value))}
-                                className="w-full md:w-64 bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-white font-medium focus:border-padel focus:outline-none"
-                            >
-                                {tournaments.map(t => (
-                                    <option key={t.id} value={t.id}>
-                                        {t.name} {t.status === 'open' ? '(Inscriptions)' : '(En cours)'}
-                                    </option>
-                                ))}
+                            <select value={activeLiveId} onChange={e => setActiveLiveId(Number(e.target.value))} className="w-full md:w-64 bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-white font-medium focus:border-padel focus:outline-none">
+                                {tournaments.map(t => <option key={t.id} value={t.id}>{t.name} {t.status === 'open' ? '(Inscriptions)' : '(En cours)'}</option>)}
                             </select>
                         </div>
                     </div>
 
                     {activeTourney.status === 'open' ? (
                         <div className="text-center py-20">
-                            <div className="inline-block p-4 rounded-full bg-dark-card text-gray-500 mb-4">
-                                <IconClock size={32} />
-                            </div>
+                            <div className="inline-block p-4 rounded-full bg-dark-card text-gray-500 mb-4"><IconClock size={32} /></div>
                             <h2 className="text-3xl font-bold mb-2">Le tournoi n'a pas encore commencé</h2>
                             <p className="text-gray-400">L'organisateur prépare les premiers matchs pour {activeTourney.name}.</p>
                         </div>
                     ) : (
                         <>
-                            <UpcomingMatches activeTourney={activeTourney} />
+                            <UpcomingMatches readySchedule={readySchedule} />
                             <div className="h-px bg-dark-border w-full my-8"></div>
                             
                             {bracketGroups.map(group => (
                                 <React.Fragment key={group.id}>
-                                    <BracketView 
-                                        matches={activeTourney.matches} 
-                                        bracketType={group.id} 
-                                        title={group.name} 
-                                        icon={group.id === 'main' ? <IconTrophy/> : <IconPlay/>} 
-                                    />
+                                    <BracketView matches={activeTourney.matches} bracketType={group.id} title={group.name} icon={group.id === 'main' ? <IconTrophy/> : <IconPlay/>} />
                                     <div className="h-px bg-dark-border w-full my-8"></div>
                                 </React.Fragment>
                             ))}
+
+                            <GlobalSchedule schedule={fullSchedule} />
                         </>
                     )}
                 </div>
@@ -519,30 +565,17 @@
             if (!scoreAuth) {
                 const handleLogin = (e) => {
                     e.preventDefault();
-                    if (password === 'AS1992') {
-                        setScoreAuth(true);
-                        setError('');
-                    } else {
-                        setError('Mot de passe incorrect.');
-                        setPassword('');
-                    }
+                    if (password === 'AS1992') { setScoreAuth(true); setError(''); } 
+                    else { setError('Mot de passe incorrect.'); setPassword(''); }
                 };
 
                 return (
                     <div className="max-w-sm mx-auto mt-20 glass-panel p-8 rounded-2xl text-center">
-                        <div className="w-16 h-16 bg-dark-card rounded-full flex items-center justify-center text-padel mx-auto mb-6">
-                            <IconTablet size={32} />
-                        </div>
+                        <div className="w-16 h-16 bg-dark-card rounded-full flex items-center justify-center text-padel mx-auto mb-6"><IconTablet size={32} /></div>
                         <h2 className="text-2xl font-black mb-2 text-white uppercase tracking-tight">Espace Joueurs</h2>
                         <p className="text-gray-400 text-sm mb-6">Saisissez le mot de passe pour accéder à la saisie des scores.</p>
                         <form onSubmit={handleLogin} className="space-y-4">
-                            <input 
-                                type="password" 
-                                placeholder="Mot de passe" 
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                className="w-full text-center text-xl tracking-widest bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
-                            />
+                            <input type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} className="w-full text-center text-xl tracking-widest bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" />
                             {error && <p className="text-red-400 text-xs font-bold">{error}</p>}
                             <button type="submit" className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-black py-3 rounded-lg uppercase tracking-wider transition-all">Déverrouiller</button>
                         </form>
@@ -563,35 +596,23 @@
                                 <p className="text-padel text-sm font-bold">À remplir en sortant du terrain</p>
                             </div>
                         </div>
-                        <select 
-                            value={activeLiveId}
-                            onChange={e => setActiveLiveId(Number(e.target.value))}
-                            className="w-full md:w-64 bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white font-medium focus:border-padel focus:outline-none"
-                        >
+                        <select value={activeLiveId} onChange={e => setActiveLiveId(Number(e.target.value))} className="w-full md:w-64 bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white font-medium focus:border-padel focus:outline-none">
                             {tournaments.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                         </select>
                     </div>
 
                     {(!activeTourney || activeTourney.status === 'open' || playingMatches.length === 0) ? (
-                        <div className="text-center py-20 glass-panel rounded-xl">
-                            <p className="text-gray-400 text-xl font-medium">Aucun match en cours nécessitant un score pour le moment.</p>
-                        </div>
+                        <div className="text-center py-20 glass-panel rounded-xl"><p className="text-gray-400 text-xl font-medium">Aucun match en cours nécessitant un score pour le moment.</p></div>
                     ) : (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {playingMatches.map(match => (
                                 <div key={match.id} className="bg-dark-card p-6 md:p-8 rounded-3xl border-2 border-dark-border relative overflow-hidden flex flex-col justify-between">
-                                    <div className="absolute top-0 right-0 bg-dark-border text-white text-sm font-black px-4 py-2 rounded-bl-xl uppercase tracking-widest">
-                                        Terrain {match.courtId}
-                                    </div>
+                                    <div className="absolute top-0 right-0 bg-dark-border text-white text-sm font-black px-4 py-2 rounded-bl-xl uppercase tracking-widest">Terrain {match.courtId}</div>
                                     <div className="mb-8 mt-4">
-                                        <p className="text-gray-400 font-bold uppercase tracking-wider text-sm mb-6">
-                                            {match.bracketName} - {match.title}
-                                        </p>
+                                        <p className="text-gray-400 font-bold uppercase tracking-wider text-sm mb-6">{match.bracketName} - {match.title}</p>
                                         <div className="space-y-4">
                                             <label className={`flex items-center p-5 rounded-2xl border-2 cursor-pointer transition-all ${match.winner === match.team1?.id ? 'bg-padel border-padel text-dark-bg shadow-[0_0_20px_rgba(190,242,100,0.4)] scale-[1.02]' : 'bg-dark-bg border-dark-border text-white hover:border-gray-500'}`}>
-                                                <input type="radio" name={`tablet-winner-${match.id}`} className="hidden" 
-                                                    checked={match.winner === match.team1?.id}
-                                                    onChange={() => updateMatchDraft(activeTourney.id, match.id, 'winner', match.team1.id)} />
+                                                <input type="radio" name={`tablet-winner-${match.id}`} className="hidden" checked={match.winner === match.team1?.id} onChange={() => updateMatchDraft(activeTourney.id, match.id, 'winner', match.team1.id)} />
                                                 <div className={`w-8 h-8 rounded-full border-4 mr-4 flex items-center justify-center ${match.winner === match.team1?.id ? 'border-dark-bg' : 'border-gray-500'}`}>
                                                     {match.winner === match.team1?.id && <div className="w-3 h-3 bg-dark-bg rounded-full"></div>}
                                                 </div>
@@ -599,9 +620,7 @@
                                             </label>
 
                                             <label className={`flex items-center p-5 rounded-2xl border-2 cursor-pointer transition-all ${match.winner === match.team2?.id ? 'bg-padel border-padel text-dark-bg shadow-[0_0_20px_rgba(190,242,100,0.4)] scale-[1.02]' : 'bg-dark-bg border-dark-border text-white hover:border-gray-500'}`}>
-                                                <input type="radio" name={`tablet-winner-${match.id}`} className="hidden" 
-                                                    checked={match.winner === match.team2?.id}
-                                                    onChange={() => updateMatchDraft(activeTourney.id, match.id, 'winner', match.team2.id)} />
+                                                <input type="radio" name={`tablet-winner-${match.id}`} className="hidden" checked={match.winner === match.team2?.id} onChange={() => updateMatchDraft(activeTourney.id, match.id, 'winner', match.team2.id)} />
                                                 <div className={`w-8 h-8 rounded-full border-4 mr-4 flex items-center justify-center ${match.winner === match.team2?.id ? 'border-dark-bg' : 'border-gray-500'}`}>
                                                     {match.winner === match.team2?.id && <div className="w-3 h-3 bg-dark-bg rounded-full"></div>}
                                                 </div>
@@ -612,19 +631,9 @@
                                     <div className="mt-auto space-y-6">
                                         <div>
                                             <label className="block text-sm font-bold text-gray-500 uppercase tracking-widest mb-3 text-center">Score Final</label>
-                                            <input type="text" placeholder="ex: 6-4 6-3" value={match.score}
-                                                onChange={(e) => updateMatchDraft(activeTourney.id, match.id, 'score', e.target.value)}
-                                                className="w-full bg-dark-bg border-2 border-dark-border rounded-xl px-6 py-5 text-white font-mono text-center text-3xl placeholder-gray-700 focus:border-padel focus:outline-none transition-colors" />
+                                            <input type="text" placeholder="ex: 6-4 6-3" value={match.score} onChange={(e) => updateMatchDraft(activeTourney.id, match.id, 'score', e.target.value)} className="w-full bg-dark-bg border-2 border-dark-border rounded-xl px-6 py-5 text-white font-mono text-center text-3xl placeholder-gray-700 focus:border-padel focus:outline-none transition-colors" />
                                         </div>
-                                        <button 
-                                            onClick={() => {
-                                                if (window.confirm(`Confirmez-vous que ce match est terminé avec ce score ?`)) {
-                                                    submitMatchResult(activeTourney.id, match.id);
-                                                    window.scrollTo(0,0);
-                                                }
-                                            }} 
-                                            className="w-full bg-dark-bg border border-padel text-padel hover:bg-padel hover:text-dark-bg font-black py-5 rounded-xl text-xl uppercase tracking-widest transition-all"
-                                        >Valider ce Match</button>
+                                        <button onClick={() => { if (window.confirm(`Confirmez-vous que ce match est terminé avec ce score ?`)) { submitMatchResult(activeTourney.id, match.id); window.scrollTo(0,0); } }} className="w-full bg-dark-bg border border-padel text-padel hover:bg-padel hover:text-dark-bg font-black py-5 rounded-xl text-xl uppercase tracking-widest transition-all">Valider ce Match</button>
                                     </div>
                                 </div>
                             ))}
@@ -655,13 +664,8 @@
             if (!adminAuth) {
                 const handleLogin = (e) => {
                     e.preventDefault();
-                    if (password === 'AS1992') {
-                        setAdminAuth(true);
-                        setError('');
-                    } else {
-                        setError('Mot de passe incorrect.');
-                        setPassword('');
-                    }
+                    if (password === 'AS1992') { setAdminAuth(true); setError(''); } 
+                    else { setError('Mot de passe incorrect.'); setPassword(''); }
                 };
                 return (
                     <div className="max-w-sm mx-auto mt-20 glass-panel p-8 rounded-2xl text-center">
@@ -678,18 +682,14 @@
 
             const activeTourney = tournaments.find(t => t.id === activeAdminId) || tournaments[0];
 
-            let p2 = 4;
-            let computedSlots = [];
+            let p2 = 4; let computedSlots = [];
             if (activeTourney && activeTourney.status === 'open') {
                 p2 = Math.pow(2, Math.ceil(Math.log2(Math.max(4, activeTourney.teams.length))));
                 computedSlots = Array(p2).fill(null);
                 let unassignedTeams = [];
                 activeTourney.teams.forEach(t => {
-                    if (t.slot >= 0 && t.slot < p2 && computedSlots[t.slot] === null) {
-                        computedSlots[t.slot] = t;
-                    } else {
-                        unassignedTeams.push(t);
-                    }
+                    if (t.slot >= 0 && t.slot < p2 && computedSlots[t.slot] === null) computedSlots[t.slot] = t;
+                    else unassignedTeams.push(t);
                 });
                 unassignedTeams.forEach(t => {
                     const emptyIdx = computedSlots.indexOf(null);
@@ -701,18 +701,14 @@
                 updateTournaments(prev => prev.map(t => {
                     if (t.id !== activeTourney.id) return t;
                     let newTeams = [...t.teams];
-                    let tempSlots = Array(p2).fill(null);
-                    let tempUnassigned = [];
+                    let tempSlots = Array(p2).fill(null); let tempUnassigned = [];
                     newTeams.forEach(tm => {
                         if (tm.slot >= 0 && tm.slot < p2 && tempSlots[tm.slot] === null) tempSlots[tm.slot] = tm;
                         else tempUnassigned.push(tm);
                     });
                     tempUnassigned.forEach(tm => {
                         const emptyIdx = tempSlots.indexOf(null);
-                        if (emptyIdx !== -1) {
-                            tempSlots[emptyIdx] = tm;
-                            tm.slot = emptyIdx; 
-                        }
+                        if (emptyIdx !== -1) { tempSlots[emptyIdx] = tm; tm.slot = emptyIdx; }
                     });
 
                     if (!teamIdStr) {
@@ -753,23 +749,15 @@
                     const newTeams = t.teams.map(tm => tm.id === team.id ? { ...tm, paid: true } : tm);
                     return { ...t, teams: newTeams };
                 }));
+                if (team.email) sendEmailNotification('payment', { to_email: team.email, team_name: team.name, tourney_name: activeTourney.name });
                 const targetEmail = team.email ? team.email : "l'équipe";
                 setNotification(`Paiement validé pour ${team.name}. Un e-mail a été envoyé à ${targetEmail}.`);
                 setTimeout(() => setNotification(''), 6000);
             };
 
-            const startEditingMatch = (match) => {
-                setEditingMatchId(match.id);
-                setEditWinner(match.winner);
-                setEditScore(match.score);
-            };
+            const startEditingMatch = (match) => { setEditingMatchId(match.id); setEditWinner(match.winner); setEditScore(match.score); };
+            const saveEditingMatch = (matchId) => { editPastMatch(activeTourney.id, matchId, editWinner, editScore); setEditingMatchId(null); };
 
-            const saveEditingMatch = (matchId) => {
-                editPastMatch(activeTourney.id, matchId, editWinner, editScore);
-                setEditingMatchId(null);
-            };
-
-            // ---- MODAL DU RAPPORT ET CLASSEMENT ----
             let rankings = [];
             if (activeTourney && activeTourney.status !== 'open') {
                 const maxRound = Math.max(0, ...activeTourney.matches.map(m => m.round));
@@ -789,7 +777,6 @@
             
             return (
                 <div className="space-y-8 relative">
-                    {/* MODAL RAPPORT */}
                     {showSummary && activeTourney && (
                         <div className="fixed inset-0 bg-white z-[100] overflow-y-auto text-black p-8 print:p-0">
                             <div className="max-w-4xl mx-auto print:max-w-full">
@@ -805,16 +792,9 @@
                                     <p className="text-xl text-gray-600">Rapport complet du tournoi & Classement Officiel</p>
                                     <p className="text-sm text-gray-500 mt-2">Généré le {new Date().toLocaleDateString('fr-FR')}</p>
                                 </div>
-
                                 <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-2">Classement Final</h2>
                                 <table className="w-full mb-12 text-left border-collapse">
-                                    <thead>
-                                        <tr className="bg-gray-100">
-                                            <th className="p-3 border border-gray-300">Rang</th>
-                                            <th className="p-3 border border-gray-300">Équipe</th>
-                                            <th className="p-3 border border-gray-300">Licences</th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr className="bg-gray-100"><th className="p-3 border border-gray-300">Rang</th><th className="p-3 border border-gray-300">Équipe</th><th className="p-3 border border-gray-300">Licences</th></tr></thead>
                                     <tbody>
                                         {rankings.length > 0 ? rankings.map((r, i) => (
                                             <tr key={i} className="hover:bg-gray-50">
@@ -825,7 +805,6 @@
                                         )) : <tr><td colSpan="3" className="p-4 border border-gray-300 text-center italic text-gray-500">Le classement sera disponible une fois les derniers matchs terminés.</td></tr>}
                                     </tbody>
                                 </table>
-
                                 <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-2">Historique de tous les Résultats</h2>
                                 <div className="space-y-2">
                                     {activeTourney.matches.filter(m => m.status === 'finished' && m.score !== 'BYE').sort((a,b) => b.round - a.round).map(m => (
@@ -1021,7 +1000,6 @@
                                 )}
                             </div>
 
-                            {/* NOUVEAU MODULE : HISTORIQUE ET EDITION */}
                             <div className="mt-16 border-t border-dark-border pt-8">
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                                     <h3 className="text-xl font-bold flex items-center gap-2 text-white">
@@ -1103,7 +1081,6 @@
             );
         };
 
-        // --- APPLICATION ROOT COMPONENT ---
         const App = () => {
             const [view, setView] = useState('home');
             const [scoreAuth, setScoreAuth] = useState(false); 
@@ -1169,41 +1146,28 @@
             const [activeLiveId, setActiveLiveId] = useState(1);
             const [activeAdminId, setActiveAdminId] = useState(1);
 
-            // NOUVEL ALGORITHME : RECONSTRUCTION GLOBALE
             const rebuildMatches = (matches) => {
                 let updated = JSON.parse(JSON.stringify(matches));
-                
-                // 1. Réinitialiser les équipes au-delà du Tour 0
                 updated.forEach(m => {
-                    if (m.round > 0) {
-                        m.team1 = null; m.team2 = null;
-                    }
-                    if (m.status === 'ready' || m.status === 'playing') {
-                        m.status = 'pending';
-                    }
+                    if (m.round > 0) { m.team1 = null; m.team2 = null; }
+                    if (m.status === 'ready' || m.status === 'playing') m.status = 'pending';
                 });
 
-                // 2. Propager tour par tour
                 const maxRound = Math.max(0, ...updated.map(m => m.round));
                 for (let r = 0; r <= maxRound; r++) {
                     const roundMatches = updated.filter(m => m.round === r);
                     roundMatches.forEach(match => {
-                        // Un match avec deux équipes devient Prêt
                         if (match.team1 && match.team2 && match.status === 'pending') {
                             if (match.team1.isBye || match.team2.isBye) {
-                                match.status = 'finished';
-                                match.score = 'BYE';
+                                match.status = 'finished'; match.score = 'BYE';
                                 match.winner = match.team1.isBye ? match.team2.id : match.team1.id;
                             } else {
                                 match.status = 'ready';
                             }
                         }
-
-                        // Si le match est fini, on envoie le vainqueur et perdant au tour suivant
                         if (match.status === 'finished' && match.winner) {
                             const winnerTeam = match.team1?.id === match.winner ? match.team1 : match.team2;
                             const loserTeam = match.team1?.id === match.winner ? match.team2 : match.team1;
-
                             if (match.nextMatchId) {
                                 const n = updated.find(x => x.id === match.nextMatchId);
                                 if (n) {
@@ -1233,9 +1197,7 @@
                 let courtIdx = 0;
                 for (let m of readyMatches) {
                     if (courtIdx < availableCourts.length) {
-                        m.status = 'playing';
-                        m.courtId = availableCourts[courtIdx];
-                        m.startTime = Date.now();
+                        m.status = 'playing'; m.courtId = availableCourts[courtIdx]; m.startTime = Date.now();
                         courtIdx++;
                     }
                 }
