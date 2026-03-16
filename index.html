@@ -124,7 +124,7 @@
         };
 
         const sendEmailNotification = async (type, params) => {
-            if (EMAILJS_CONFIG.serviceId === "VOTRE_SERVICE_ID") return; 
+            if (EMAILJS_CONFIG.serviceId === "VOTRE_SERVICE_ID" || !params.to_email) return; 
             
             let templateId = EMAILJS_CONFIG.templateIdRegister;
             if (type === 'payment') templateId = EMAILJS_CONFIG.templateIdPayment;
@@ -143,13 +143,15 @@
         const IconTrophy = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
         const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
         const IconPlay = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
-        const IconSettings = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+        const IconSettings = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
         const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
         const IconCreditCard = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>;
         const IconTimer = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2h4"/><path d="M12 14v-4"/><path d="M4 13a8 8 0 0 1 8-8 8 8 0 0 1 8 8 8 8 0 0 1-8 8 8 8 0 0 1-8-8Z"/></svg>;
         const IconPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
         const IconTablet = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>;
         const IconTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+        const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>;
+        const IconActivity = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>;
 
         // --- COMPOSANTS SECONDAIRES & VUES ---
 
@@ -223,6 +225,8 @@
             const [isWaitlistedStatus, setIsWaitlistedStatus] = useState(false);
 
             const activeTourney = tournaments.find(t => t.id === Number(selectedTourneyId));
+            const isLoisir = activeTourney?.category === 'loisir';
+            
             const confirmedTeamsCount = activeTourney ? activeTourney.teams.filter(t => t.status !== 'waitlist').length : 0;
             const waitlistTeamsCount = activeTourney ? activeTourney.teams.filter(t => t.status === 'waitlist').length : 0;
             
@@ -234,20 +238,33 @@
 
             const handleSubmit = (e) => {
                 e.preventDefault();
-                if(!p1 || !p2 || !l1 || !l2 || !teamEmail || !activeTourney || isPastDeadline || isTotallyFull) return;
+                
+                if (isLoisir) {
+                    if (!p1 || !p2 || !activeTourney || isPastDeadline || isTotallyFull) return;
+                } else {
+                    if (!p1 || !p2 || !l1 || !l2 || !teamEmail || !activeTourney || isPastDeadline || isTotallyFull) return;
+                }
                 
                 const teamStatus = isMainFull ? 'waitlist' : 'confirmed';
                 const newTeam = {
-                    id: Date.now(), name: `${p1} / ${p2}`, l1: l1, l2: l2, email: teamEmail, paid: false, status: teamStatus
+                    id: Date.now(), 
+                    name: `${p1} / ${p2}`, 
+                    l1: isLoisir ? '' : l1, 
+                    l2: isLoisir ? '' : l2, 
+                    email: isLoisir ? '' : teamEmail, 
+                    paid: isLoisir ? true : false, 
+                    status: teamStatus
                 };
                 
                 updateTournaments(prev => prev.map(t => t.id === activeTourney.id ? { ...t, teams: [...t.teams, newTeam] } : t));
                 
-                const emailType = isMainFull ? 'waitlist_register' : 'register';
-                sendEmailNotification(emailType, { to_email: teamEmail, team_name: newTeam.name, tourney_name: activeTourney.name, price: activeTourney.price });
-                
-                if (!isMainFull && activeTourney.paymentLink && activeTourney.paymentLink.trim() !== '') {
-                    window.open(activeTourney.paymentLink, '_blank');
+                if (!isLoisir && teamEmail) {
+                    const emailType = isMainFull ? 'waitlist_register' : 'register';
+                    sendEmailNotification(emailType, { to_email: teamEmail, team_name: newTeam.name, tourney_name: activeTourney.name, price: activeTourney.price });
+                    
+                    if (!isMainFull && activeTourney.paymentLink && activeTourney.paymentLink.trim() !== '') {
+                        window.open(activeTourney.paymentLink, '_blank');
+                    }
                 }
                 setIsWaitlistedStatus(isMainFull);
                 setSuccess(true);
@@ -267,22 +284,27 @@
                 return (
                     <div className={`max-w-md mx-auto mt-12 glass-panel p-8 rounded-2xl text-center ${isWaitlistedStatus ? 'border-yellow-500' : 'border-padel'}`}>
                         <div className={`w-16 h-16 rounded-full flex items-center justify-center text-dark-bg mx-auto mb-4 ${isWaitlistedStatus ? 'bg-yellow-500' : 'bg-padel'}`}>
-                            {isWaitlistedStatus ? <IconClock size={24} /> : <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>}
+                            {isWaitlistedStatus ? <IconClock size={24} /> : <IconCheck />}
                         </div>
                         <h2 className="text-2xl font-bold mb-2 text-white">
-                            {isWaitlistedStatus ? "Inscrit sur Liste d'Attente" : "Inscription Pré-validée !"}
+                            {isWaitlistedStatus ? "Inscrit sur Liste d'Attente" : "Inscription Validée !"}
                         </h2>
-                        <p className="text-gray-400 mb-4">Votre équipe est enregistrée pour <strong>{activeTourney.name}</strong>.</p>
-                        <p className={`${isWaitlistedStatus ? 'text-yellow-500' : 'text-padel'} text-sm font-bold mb-4`}>
-                            Un e-mail de confirmation vous a été envoyé à {teamEmail}.
-                        </p>
-                        {!isWaitlistedStatus && activeTourney.paymentLink ? (
-                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Un nouvel onglet s'est ouvert pour le paiement. Votre inscription sera définitive une fois le paiement de <strong>{activeTourney.price}€</strong> validé par l'organisateur.</p>
-                        ) : !isWaitlistedStatus ? (
-                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Veuillez procéder au paiement de <strong>{activeTourney.price}€</strong> auprès de l'organisateur pour valider définitivement votre place.</p>
-                        ) : (
-                            <p className="bg-dark-bg text-gray-400 p-3 rounded text-sm border border-dark-border">Le tournoi principal est complet. Si une place se libère, vous serez promu et notifié automatiquement ! Ne payez rien pour le moment.</p>
+                        <p className="text-gray-400 mb-4">Votre équipe est enregistrée pour le tournoi {isLoisir && "Loisir "}<strong>{activeTourney.name}</strong>.</p>
+                        
+                        {!isLoisir && teamEmail && (
+                            <p className={`${isWaitlistedStatus ? 'text-yellow-500' : 'text-padel'} text-sm font-bold mb-4`}>
+                                Un e-mail de confirmation vous a été envoyé.
+                            </p>
                         )}
+
+                        {!isLoisir && !isWaitlistedStatus && activeTourney.paymentLink ? (
+                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Un nouvel onglet s'est ouvert pour le paiement. Votre inscription sera définitive une fois le paiement de <strong>{activeTourney.price}€</strong> validé par l'organisateur.</p>
+                        ) : !isLoisir && !isWaitlistedStatus ? (
+                            <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Veuillez procéder au paiement de <strong>{activeTourney.price}€</strong> auprès de l'organisateur pour valider définitivement votre place.</p>
+                        ) : !isLoisir && isWaitlistedStatus ? (
+                            <p className="bg-dark-bg text-gray-400 p-3 rounded text-sm border border-dark-border">Le tournoi principal est complet. Si une place se libère, vous serez promu et notifié automatiquement ! Ne payez rien pour le moment.</p>
+                        ) : null}
+
                         <button onClick={() => {setSuccess(false); setView('home');}} className="mt-6 text-padel underline text-sm">Retour à l'accueil</button>
                     </div>
                 );
@@ -300,15 +322,16 @@
                                     {openTournaments.map(t => {
                                         const tConfirmed = t.teams.filter(x => x.status !== 'waitlist').length;
                                         const tWaitlist = t.teams.filter(x => x.status === 'waitlist').length;
-                                        return <option key={t.id} value={t.id}>{t.name} ({tConfirmed}/{t.maxTeams} places {tWaitlist > 0 ? `| ${tWaitlist} en attente` : ''})</option>
+                                        return <option key={t.id} value={t.id}>{t.name} ({t.category === 'loisir' ? 'Loisir' : 'Compétition'}) - {tConfirmed}/{t.maxTeams} places {tWaitlist > 0 ? `| ${tWaitlist} en attente` : ''}</option>
                                     })}
                                 </select>
                             </div>
                             {activeTourney && (
                                 <div className="bg-dark-card border border-dark-border rounded-lg p-4 text-sm flex flex-col gap-2">
+                                    <div className="flex justify-between items-center border-b border-dark-border pb-2"><span className="text-gray-400">Format</span><span className="text-white font-bold">{activeTourney.category === 'loisir' ? 'Loisir' : 'Compétition'}</span></div>
                                     <div className="flex justify-between items-center border-b border-dark-border pb-2"><span className="text-gray-400">Date du tournoi</span><span className="text-white font-bold">{new Date(activeTourney.date).toLocaleDateString('fr-FR')}</span></div>
                                     <div className="flex justify-between items-center border-b border-dark-border pb-2"><span className="text-gray-400">Limite d'inscription</span><span className={`font-bold ${isPastDeadline ? 'text-red-400' : 'text-white'}`}>{new Date(activeTourney.registrationDeadline).toLocaleDateString('fr-FR')}</span></div>
-                                    <div className="flex justify-between items-center"><span className="text-gray-400">Prix par paire</span><span className="text-padel font-bold text-lg">{activeTourney.price} €</span></div>
+                                    {!isLoisir && <div className="flex justify-between items-center"><span className="text-gray-400">Prix par paire</span><span className="text-padel font-bold text-lg">{activeTourney.price} €</span></div>}
                                     
                                     {isMainFull && !isTotallyFull && (
                                         <div className="mt-2 bg-yellow-900/30 border border-yellow-800 text-yellow-500 p-2 rounded text-xs text-center font-bold">
@@ -325,26 +348,28 @@
                                 <>
                                     <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
                                         <label className="block text-sm font-bold text-padel uppercase tracking-wider">Joueur 1</label>
-                                        <input type="text" required value={p1} onChange={e=>setP1(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Nom complet" />
-                                        <input type="text" required value={l1} onChange={e=>setL1(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Numéro de licence" />
+                                        <input type="text" required value={p1} onChange={e=>setP1(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Nom et Prénom" />
+                                        {!isLoisir && <input type="text" required value={l1} onChange={e=>setL1(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Numéro de licence" />}
                                     </div>
                                     <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
                                         <label className="block text-sm font-bold text-padel uppercase tracking-wider">Joueur 2</label>
-                                        <input type="text" required value={p2} onChange={e=>setP2(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Nom complet" />
-                                        <input type="text" required value={l2} onChange={e=>setL2(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Numéro de licence" />
+                                        <input type="text" required value={p2} onChange={e=>setP2(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Nom et Prénom" />
+                                        {!isLoisir && <input type="text" required value={l2} onChange={e=>setL2(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Numéro de licence" />}
                                     </div>
-                                    <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
-                                        <label className="block text-sm font-bold text-padel uppercase tracking-wider">Contact de l'équipe</label>
-                                        <input type="email" required value={teamEmail} onChange={e=>setTeamEmail(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Adresse e-mail" />
-                                    </div>
+                                    {!isLoisir && (
+                                        <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
+                                            <label className="block text-sm font-bold text-padel uppercase tracking-wider">Contact de l'équipe</label>
+                                            <input type="email" required value={teamEmail} onChange={e=>setTeamEmail(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Adresse e-mail" />
+                                        </div>
+                                    )}
                                     <div className="pt-4">
-                                        <button type="submit" disabled={!p1 || !p2 || !l1 || !l2 || !teamEmail} className={`w-full ${isMainFull ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-padel hover:bg-padel-dark'} text-dark-bg font-bold py-4 rounded-lg flex justify-center items-center space-x-2 transition-all disabled:opacity-50`}>
-                                            <IconCreditCard />
+                                        <button type="submit" disabled={isLoisir ? (!p1 || !p2) : (!p1 || !p2 || !l1 || !l2 || !teamEmail)} className={`w-full ${isMainFull ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-padel hover:bg-padel-dark'} text-dark-bg font-bold py-4 rounded-lg flex justify-center items-center space-x-2 transition-all disabled:opacity-50`}>
+                                            {!isLoisir && !isMainFull ? <IconCreditCard /> : <IconCheck />}
                                             <span>
-                                                {isMainFull ? "S'inscrire en Liste d'Attente" : `S'inscrire ${activeTourney.paymentLink ? "& Payer en ligne" : ""}`}
+                                                {isMainFull ? "S'inscrire en Liste d'Attente" : (isLoisir ? "Valider l'inscription" : `S'inscrire ${activeTourney.paymentLink ? "& Payer en ligne" : ""}`)}
                                             </span>
                                         </button>
-                                        {!isMainFull && <p className="text-xs text-center text-gray-500 mt-3">Paiement sécurisé. Non remboursable à moins de 48h du tournoi.</p>}
+                                        {!isLoisir && !isMainFull && <p className="text-xs text-center text-gray-500 mt-3">Paiement sécurisé. Non remboursable à moins de 48h du tournoi.</p>}
                                     </div>
                                 </>
                             )}
@@ -448,6 +473,110 @@
                                 </div>
                             )
                         })}
+                    </div>
+                </div>
+            );
+        };
+
+        const LiveStatsTable = ({ activeTourney }) => {
+            const [now, setNow] = useState(Date.now());
+            
+            useEffect(() => {
+                const timer = setInterval(() => setNow(Date.now()), 10000); 
+                return () => clearInterval(timer);
+            }, []);
+
+            if (!activeTourney || activeTourney.status !== 'started' || !activeTourney.matches) return null;
+
+            const confirmedTeams = activeTourney.teams.filter(t => t.status !== 'waitlist' && !t.isBye);
+            
+            const stats = confirmedTeams.map(team => {
+                let gamesWon = 0;
+                let matchesPlayed = 0;
+                let playTimeMs = 0;
+                let maxRank = '-';
+
+                const tMatches = activeTourney.matches.filter(m => m.team1?.id === team.id || m.team2?.id === team.id);
+                
+                tMatches.forEach(m => {
+                    const isT1 = m.team1?.id === team.id;
+                    
+                    if (m.status === 'finished' && m.score && m.score !== 'BYE') {
+                        matchesPlayed++;
+                        const sets = m.score.split(' ');
+                        sets.forEach(set => {
+                            const matchMatch = set.match(/(\d+)\s*-\s*(\d+)/);
+                            if (matchMatch) {
+                                gamesWon += parseInt(isT1 ? matchMatch[1] : matchMatch[2]) || 0;
+                            }
+                        });
+                    }
+
+                    if (m.startTime && m.score !== 'BYE') {
+                        if (m.status === 'finished') {
+                            playTimeMs += (m.endTime || (m.startTime + 45 * 60000)) - m.startTime;
+                        } else if (m.status === 'playing') {
+                            playTimeMs += now - m.startTime;
+                        }
+                    }
+                });
+
+                if (tMatches.length > 0) {
+                    const sorted = [...tMatches].sort((a,b) => b.round - a.round);
+                    const latest = sorted[0];
+                    if (latest.status === 'finished') {
+                        maxRank = latest.winner === team.id ? latest.blockTopRank : (latest.blockTopRank + 1);
+                    } else {
+                        maxRank = latest.blockTopRank || 1;
+                    }
+                }
+
+                const hours = Math.floor(playTimeMs / 3600000);
+                const mins = Math.floor((playTimeMs % 3600000) / 60000);
+                const timeStr = hours > 0 ? `${hours}h${mins.toString().padStart(2, '0')}` : `${mins} min`;
+
+                return { ...team, maxRank, matchesPlayed, gamesWon, timeStr, playTimeMs };
+            });
+
+            stats.sort((a, b) => {
+                const rankA = a.maxRank === '-' ? 999 : a.maxRank;
+                const rankB = b.maxRank === '-' ? 999 : b.maxRank;
+                if (rankA !== rankB) return rankA - rankB;
+                return b.gamesWon - a.gamesWon; 
+            });
+
+            return (
+                <div className="mt-16 border-t border-dark-border pt-12">
+                    <h3 className="text-2xl font-black text-white mb-6 flex items-center gap-2">
+                        <IconActivity />
+                        <span>Statistiques en Direct par Équipe</span>
+                    </h3>
+                    <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto">
+                        <table className="w-full text-left text-sm text-gray-300">
+                            <thead className="bg-dark-card border-b border-dark-border text-xs uppercase text-gray-500">
+                                <tr>
+                                    <th className="p-4">Équipe</th>
+                                    <th className="p-4 text-center">Class. Max Possible</th>
+                                    <th className="p-4 text-center">Matchs Joués</th>
+                                    <th className="p-4 text-center">Jeux Gagnés</th>
+                                    <th className="p-4 text-center">Temps de Jeu</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-dark-border">
+                                {stats.map((s) => (
+                                    <tr key={s.id} className="hover:bg-dark-card/50 transition-colors">
+                                        <td className="p-4 font-bold text-white">{s.name}</td>
+                                        <td className="p-4 text-center">
+                                            <span className="bg-padel/10 text-padel font-black px-3 py-1 rounded-full">{s.maxRank}</span>
+                                        </td>
+                                        <td className="p-4 text-center font-mono">{s.matchesPlayed}</td>
+                                        <td className="p-4 text-center font-mono text-green-400">{s.gamesWon}</td>
+                                        <td className="p-4 text-center font-mono text-gray-400">{s.timeStr}</td>
+                                    </tr>
+                                ))}
+                                {stats.length === 0 && <tr><td colSpan="5" className="p-4 text-center text-gray-500 italic">Aucune équipe active.</td></tr>}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             );
@@ -593,6 +722,8 @@
                                     <div className="h-px bg-dark-border w-full my-8"></div>
                                 </React.Fragment>
                             ))}
+
+                            <LiveStatsTable activeTourney={activeTourney} />
                         </>
                     )}
                 </div>
@@ -812,6 +943,8 @@
             const [newTourneyMaxTeams, setNewTourneyMaxTeams] = useState(16);
             const [newTourneyCourts, setNewTourneyCourts] = useState(4);
             const [newTourneyPaymentLink, setNewTourneyPaymentLink] = useState('');
+            const [newTourneyCategory, setNewTourneyCategory] = useState('competition');
+            const [newTourneyFormat, setNewTourneyFormat] = useState('integral');
 
             const [showSummary, setShowSummary] = useState(false);
             const [editingMatchId, setEditingMatchId] = useState(null);
@@ -894,6 +1027,7 @@
                 const newTourney = {
                     id: Date.now(), name: newTourneyName, date: newTourneyDate, registrationDeadline: newTourneyDeadline,
                     price: newTourneyPrice, maxTeams: newTourneyMaxTeams, numCourts: newTourneyCourts, paymentLink: newTourneyPaymentLink,
+                    category: newTourneyCategory, format: newTourneyFormat,
                     status: 'open', teams: [], matches: [], inactiveCourts: []
                 };
                 updateTournaments(prev => [...prev, newTourney]);
@@ -925,6 +1059,8 @@
                     numCourts: 4,
                     inactiveCourts: [],
                     paymentLink: "",
+                    category: "competition",
+                    format: "integral",
                     status: 'open',
                     teams: testTeams,
                     matches: []
@@ -946,7 +1082,7 @@
                         const waitlistTeam = newTeams.find(tm => tm.status === 'waitlist');
                         if (waitlistTeam) {
                             waitlistTeam.status = 'confirmed';
-                            if (waitlistTeam.email) sendEmailNotification('promoted', { to_email: waitlistTeam.email, team_name: waitlistTeam.name, tourney_name: t.name });
+                            if (waitlistTeam.email && t.category !== 'loisir') sendEmailNotification('promoted', { to_email: waitlistTeam.email, team_name: waitlistTeam.name, tourney_name: t.name });
                             setNotification(`Équipe supprimée. ${waitlistTeam.name} a été promue en liste principale.`);
                             setTimeout(() => setNotification(''), 6000);
                         } else {
@@ -967,7 +1103,7 @@
                     const newTeams = t.teams.map(tm => tm.id === team.id ? { ...tm, paid: true } : tm);
                     return { ...t, teams: newTeams };
                 }));
-                if (team.email) sendEmailNotification('payment', { to_email: team.email, team_name: team.name, tourney_name: activeTourney.name });
+                if (team.email && activeTourney.category !== 'loisir') sendEmailNotification('payment', { to_email: team.email, team_name: team.name, tourney_name: activeTourney.name });
                 const targetEmail = team.email ? team.email : "l'équipe";
                 setNotification(`Paiement validé pour ${team.name}. Un e-mail a été envoyé à ${targetEmail}.`);
                 setTimeout(() => setNotification(''), 6000);
@@ -975,6 +1111,16 @@
 
             const startEditingMatch = (match) => { setEditingMatchId(match.id); setEditWinner(match.winner); setEditScore(match.score); };
             const saveEditingMatch = (matchId) => { editPastMatch(activeTourney.id, matchId, editWinner, editScore); setEditingMatchId(null); };
+
+            const handleStartTournamentClick = (tourneyId) => {
+                const t = tournaments.find(t => t.id === tourneyId);
+                if (t.format === 'poules') {
+                    alert("Le format 'Poules + Phase Finale' nécessite un développement supplémentaire de l'algorithme. Pour l'instant, le tournoi va se lancer en 'Classement Intégral' (par défaut).");
+                } else if (t.format === 'montante') {
+                    alert("Le format 'Montante/Descendante' nécessite un système de chronomètre global. Pour l'instant, le tournoi va se lancer en 'Classement Intégral' (par défaut).");
+                }
+                startTournament(tourneyId);
+            };
 
             let rankings = [];
             if (activeTourney && activeTourney.status !== 'open') {
@@ -1013,15 +1159,15 @@
                                 </div>
                                 <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-2">Classement Final</h2>
                                 <table className="w-full mb-12 text-left border-collapse">
-                                    <thead><tr className="bg-gray-100"><th className="p-3 border border-gray-300">Rang</th><th className="p-3 border border-gray-300">Équipe</th><th className="p-3 border border-gray-300">Licences</th></tr></thead>
+                                    <thead><tr className="bg-gray-100"><th className="p-3 border border-gray-300">Rang</th><th className="p-3 border border-gray-300">Équipe</th>{activeTourney.category !== 'loisir' && <th className="p-3 border border-gray-300">Licences</th>}</tr></thead>
                                     <tbody>
                                         {rankings.length > 0 ? rankings.map((r, i) => (
                                             <tr key={i} className="hover:bg-gray-50">
                                                 <td className="p-3 border border-gray-300 font-black text-lg">{r.rank}</td>
                                                 <td className="p-3 border border-gray-300 font-bold">{r.team.name}</td>
-                                                <td className="p-3 border border-gray-300 text-sm text-gray-600">{r.team.l1} / {r.team.l2}</td>
+                                                {activeTourney.category !== 'loisir' && <td className="p-3 border border-gray-300 text-sm text-gray-600">{r.team.l1} / {r.team.l2}</td>}
                                             </tr>
-                                        )) : <tr><td colSpan="3" className="p-4 border border-gray-300 text-center italic text-gray-500">Le classement sera disponible une fois les derniers matchs terminés.</td></tr>}
+                                        )) : <tr><td colSpan={activeTourney.category !== 'loisir' ? 3 : 2} className="p-4 border border-gray-300 text-center italic text-gray-500">Le classement sera disponible une fois les derniers matchs terminés.</td></tr>}
                                     </tbody>
                                 </table>
                                 <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-2">Historique de tous les Résultats</h2>
@@ -1062,12 +1208,37 @@
                             <h3 className="font-bold text-padel mb-3 flex items-center gap-2"><IconPlus/> Mettre en ligne un tournoi</h3>
                             <form onSubmit={handleCreateTournament} className="space-y-3 text-sm">
                                 <div><input type="text" placeholder="Nom du tournoi" required value={newTourneyName} onChange={e=>setNewTourneyName(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
+                                
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <label className="text-xs text-gray-500 mb-1 block">Catégorie</label>
+                                        <select value={newTourneyCategory} onChange={e=>setNewTourneyCategory(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white">
+                                            <option value="competition">Compétition</option>
+                                            <option value="loisir">Loisir (Noms uniquement)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <label className="text-xs text-gray-500 mb-1 block">Format du Tournoi</label>
+                                        <select value={newTourneyFormat} onChange={e=>setNewTourneyFormat(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white">
+                                            <option value="integral">Classement Intégral (Compass)</option>
+                                            <option value="poules">Poules + Phase Finale</option>
+                                            <option value="montante">Montante / Descendante</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div className="flex gap-2">
                                     <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Date</label><input type="date" required value={newTourneyDate} onChange={e=>setNewTourneyDate(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                     <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Limite Inscrip.</label><input type="date" required value={newTourneyDeadline} onChange={e=>setNewTourneyDeadline(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                 </div>
                                 <div><label className="text-xs text-gray-500 mb-1 block">Prix / paire (€)</label><input type="number" min="0" required value={newTourneyPrice} onChange={e=>setNewTourneyPrice(parseInt(e.target.value) || 0)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
-                                <div><label className="text-xs text-gray-500 mb-1 block">Lien de paiement (Optionnel)</label><input type="url" placeholder="https://buy.stripe.com/..." value={newTourneyPaymentLink} onChange={e=>setNewTourneyPaymentLink(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
+                                
+                                {newTourneyCategory !== 'loisir' && (
+                                    <div><label className="text-xs text-gray-500 mb-1 block">Lien de paiement (Optionnel)</label><input type="url" placeholder="https://buy.stripe.com/..." value={newTourneyPaymentLink} onChange={e=>setNewTourneyPaymentLink(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
+                                )}
+
                                 <div className="flex gap-2">
                                     <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Équipes max</label><input type="number" min="4" value={newTourneyMaxTeams} onChange={e=>setNewTourneyMaxTeams(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                     <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Total Terrains</label><input type="number" min="1" value={newTourneyCourts} onChange={e=>setNewTourneyCourts(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
@@ -1135,12 +1306,22 @@
                                     <h3 className="text-xl font-bold mb-4 border-b border-dark-border pb-2">Configuration de "{activeTourney.name}"</h3>
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="col-span-2"><label className="block text-sm text-gray-400 mb-1">Lien de paiement</label><input type="url" value={activeTourney.paymentLink || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, paymentLink: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" /></div>
+                                            <div className="col-span-2">
+                                                <span className="text-sm text-gray-400 mr-2">Catégorie:</span>
+                                                <span className="font-bold text-white">{activeTourney.category === 'loisir' ? 'Loisir' : 'Compétition'}</span>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <span className="text-sm text-gray-400 mr-2">Format:</span>
+                                                <span className="font-bold text-white">{activeTourney.format === 'poules' ? 'Poules + Phase Finale' : activeTourney.format === 'montante' ? 'Montante / Descendante' : 'Classement Intégral'}</span>
+                                            </div>
+                                            {activeTourney.category !== 'loisir' && (
+                                                <div className="col-span-2"><label className="block text-sm text-gray-400 mb-1">Lien de paiement</label><input type="url" value={activeTourney.paymentLink || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, paymentLink: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" /></div>
+                                            )}
                                             <div><label className="block text-sm text-gray-400 mb-1">Date</label><input type="date" value={activeTourney.date || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, date: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" /></div>
                                             <div><label className="block text-sm text-gray-400 mb-1">Limite inscrip.</label><input type="date" value={activeTourney.registrationDeadline || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, registrationDeadline: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" /></div>
                                         </div>
                                         <div className="pt-4">
-                                            <button onClick={() => startTournament(activeTourney.id)} className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-bold py-3 rounded-lg uppercase tracking-wide shadow-[0_0_15px_rgba(190,242,100,0.2)]">Lancer l'Arbre du Tournoi</button>
+                                            <button onClick={() => handleStartTournamentClick(activeTourney.id)} className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-bold py-3 rounded-lg uppercase tracking-wide shadow-[0_0_15px_rgba(190,242,100,0.2)]">Lancer l'Arbre du Tournoi</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1164,7 +1345,9 @@
                                                     {t.email && <div className="text-[10px] text-padel font-mono mt-0.5">{t.email}</div>}
                                                 </div>
                                                 <div className="flex items-center justify-between sm:justify-end gap-2 border-t border-dark-border sm:border-t-0 pt-2 sm:pt-0">
-                                                    {t.paid ? <span className="text-xs bg-green-900/50 text-green-400 px-2 py-1 rounded uppercase flex-1 text-center sm:flex-none">Payé</span> : <button onClick={() => togglePayment(activeTourney.id, t)} className="text-xs bg-yellow-900/50 text-yellow-400 hover:bg-yellow-800/50 px-2 py-1 rounded uppercase transition-colors flex-1 sm:flex-none">Valider Paiement</button>}
+                                                    {activeTourney.category !== 'loisir' && (
+                                                        t.paid ? <span className="text-xs bg-green-900/50 text-green-400 px-2 py-1 rounded uppercase flex-1 text-center sm:flex-none">Payé</span> : <button onClick={() => togglePayment(activeTourney.id, t)} className="text-xs bg-yellow-900/50 text-yellow-400 hover:bg-yellow-800/50 px-2 py-1 rounded uppercase transition-colors flex-1 sm:flex-none">Valider Paiement</button>
+                                                    )}
                                                     <button onClick={() => removeTeam(activeTourney.id, t.id)} className="text-gray-500 hover:text-red-400 transition-colors p-1" title="Supprimer l'équipe">
                                                         <IconTrash />
                                                     </button>
@@ -1369,7 +1552,7 @@
             
             const [tournaments, setTournaments] = useState([{
                 id: 1, name: "Tournoi Inaugural PadelPro", date: "2026-06-15", registrationDeadline: "2026-06-10", price: 25,
-                maxTeams: 8, numCourts: 4, inactiveCourts: [], paymentLink: "", status: 'open', 
+                maxTeams: 8, numCourts: 4, inactiveCourts: [], paymentLink: "", category: "competition", format: "integral", status: 'open', 
                 teams: [
                     { id: 1, name: "Dupont / Durand", l1: "111", l2: "222", email: "dupont@mail.fr", rank: 1, paid: true, status: 'confirmed' },
                     { id: 2, name: "Martin / Bernard", l1: "111", l2: "222", email: "martin@mail.fr", rank: 2, paid: true, status: 'confirmed' },
@@ -1569,6 +1752,7 @@
                     m.winner = match.winner;
                     m.score = match.score;
                     m.status = 'finished';
+                    if (!m.endTime) m.endTime = Date.now(); 
 
                     updatedMatches = assignCourts(rebuildMatches(updatedMatches), t.numCourts, t.inactiveCourts);
                     return { ...t, matches: updatedMatches };
