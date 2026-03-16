@@ -118,12 +118,19 @@
             serviceId: "VOTRE_SERVICE_ID", 
             templateIdRegister: "VOTRE_TEMPLATE_ID_INSCRIPTION", 
             templateIdPayment: "VOTRE_TEMPLATE_ID_PAIEMENT", 
+            templateIdWaitlist: "VOTRE_TEMPLATE_ID_ATTENTE",
+            templateIdPromoted: "VOTRE_TEMPLATE_ID_PROMU",
             publicKey: "VOTRE_PUBLIC_KEY" 
         };
 
         const sendEmailNotification = async (type, params) => {
             if (EMAILJS_CONFIG.serviceId === "VOTRE_SERVICE_ID") return; 
-            const templateId = type === 'register' ? EMAILJS_CONFIG.templateIdRegister : EMAILJS_CONFIG.templateIdPayment;
+            
+            let templateId = EMAILJS_CONFIG.templateIdRegister;
+            if (type === 'payment') templateId = EMAILJS_CONFIG.templateIdPayment;
+            if (type === 'waitlist_register') templateId = EMAILJS_CONFIG.templateIdWaitlist;
+            if (type === 'promoted') templateId = EMAILJS_CONFIG.templateIdPromoted;
+
             try {
                 await fetch('https://api.emailjs.com/api/v1.0/email/send', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -136,7 +143,7 @@
         const IconTrophy = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>;
         const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
         const IconPlay = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
-        const IconSettings = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+        const IconSettings = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
         const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
         const IconCreditCard = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>;
         const IconTimer = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2h4"/><path d="M12 14v-4"/><path d="M4 13a8 8 0 0 1 8-8 8 8 0 0 1 8 8 8 8 0 0 1-8 8 8 8 0 0 1-8-8Z"/></svg>;
@@ -213,24 +220,36 @@
             const [p2, setP2] = useState(''); const [l2, setL2] = useState('');
             const [teamEmail, setTeamEmail] = useState('');
             const [success, setSuccess] = useState(false);
+            const [isWaitlistedStatus, setIsWaitlistedStatus] = useState(false);
 
             const activeTourney = tournaments.find(t => t.id === Number(selectedTourneyId));
-            const isFull = activeTourney ? activeTourney.teams.length >= activeTourney.maxTeams : false;
+            const confirmedTeamsCount = activeTourney ? activeTourney.teams.filter(t => t.status !== 'waitlist').length : 0;
+            const waitlistTeamsCount = activeTourney ? activeTourney.teams.filter(t => t.status === 'waitlist').length : 0;
+            
+            const isMainFull = activeTourney ? confirmedTeamsCount >= activeTourney.maxTeams : false;
+            const isTotallyFull = activeTourney ? isMainFull && waitlistTeamsCount >= 4 : false;
             
             const today = new Date().toISOString().split('T')[0];
             const isPastDeadline = activeTourney ? today > activeTourney.registrationDeadline : false;
 
             const handleSubmit = (e) => {
                 e.preventDefault();
-                if(!p1 || !p2 || !l1 || !l2 || !teamEmail || !activeTourney || isPastDeadline) return;
+                if(!p1 || !p2 || !l1 || !l2 || !teamEmail || !activeTourney || isPastDeadline || isTotallyFull) return;
                 
+                const teamStatus = isMainFull ? 'waitlist' : 'confirmed';
                 const newTeam = {
-                    id: Date.now(), name: `${p1} / ${p2}`, l1: l1, l2: l2, email: teamEmail, paid: false
+                    id: Date.now(), name: `${p1} / ${p2}`, l1: l1, l2: l2, email: teamEmail, paid: false, status: teamStatus
                 };
                 
                 updateTournaments(prev => prev.map(t => t.id === activeTourney.id ? { ...t, teams: [...t.teams, newTeam] } : t));
-                sendEmailNotification('register', { to_email: teamEmail, team_name: newTeam.name, tourney_name: activeTourney.name, price: activeTourney.price });
-                if (activeTourney.paymentLink && activeTourney.paymentLink.trim() !== '') window.open(activeTourney.paymentLink, '_blank');
+                
+                const emailType = isMainFull ? 'waitlist_register' : 'register';
+                sendEmailNotification(emailType, { to_email: teamEmail, team_name: newTeam.name, tourney_name: activeTourney.name, price: activeTourney.price });
+                
+                if (!isMainFull && activeTourney.paymentLink && activeTourney.paymentLink.trim() !== '') {
+                    window.open(activeTourney.paymentLink, '_blank');
+                }
+                setIsWaitlistedStatus(isMainFull);
                 setSuccess(true);
             };
 
@@ -246,17 +265,25 @@
 
             if (success) {
                 return (
-                    <div className="max-w-md mx-auto mt-12 glass-panel p-8 rounded-2xl text-center border-padel">
-                        <div className="w-16 h-16 bg-padel rounded-full flex items-center justify-center text-dark-bg mx-auto mb-4"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg></div>
-                        <h2 className="text-2xl font-bold mb-2 text-white">Inscription Pré-validée !</h2>
+                    <div className={`max-w-md mx-auto mt-12 glass-panel p-8 rounded-2xl text-center ${isWaitlistedStatus ? 'border-yellow-500' : 'border-padel'}`}>
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-dark-bg mx-auto mb-4 ${isWaitlistedStatus ? 'bg-yellow-500' : 'bg-padel'}`}>
+                            {isWaitlistedStatus ? <IconClock size={24} /> : <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>}
+                        </div>
+                        <h2 className="text-2xl font-bold mb-2 text-white">
+                            {isWaitlistedStatus ? "Inscrit sur Liste d'Attente" : "Inscription Pré-validée !"}
+                        </h2>
                         <p className="text-gray-400 mb-4">Votre équipe est enregistrée pour <strong>{activeTourney.name}</strong>.</p>
-                        <p className="text-padel text-sm font-bold mb-4">Un e-mail de confirmation de pré-inscription a été envoyé à {teamEmail}.</p>
-                        {activeTourney.paymentLink ? (
+                        <p className={`${isWaitlistedStatus ? 'text-yellow-500' : 'text-padel'} text-sm font-bold mb-4`}>
+                            Un e-mail de confirmation vous a été envoyé à {teamEmail}.
+                        </p>
+                        {!isWaitlistedStatus && activeTourney.paymentLink ? (
                             <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Un nouvel onglet s'est ouvert pour le paiement. Votre inscription sera définitive une fois le paiement de <strong>{activeTourney.price}€</strong> validé par l'organisateur.</p>
-                        ) : (
+                        ) : !isWaitlistedStatus ? (
                             <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">Veuillez procéder au paiement de <strong>{activeTourney.price}€</strong> auprès de l'organisateur pour valider définitivement votre place.</p>
+                        ) : (
+                            <p className="bg-dark-bg text-gray-400 p-3 rounded text-sm border border-dark-border">Le tournoi principal est complet. Si une place se libère, vous serez promu et notifié automatiquement ! Ne payez rien pour le moment.</p>
                         )}
-                        <button onClick={() => setView('live')} className="mt-6 text-padel underline text-sm">Voir les tournois</button>
+                        <button onClick={() => {setSuccess(false); setView('home');}} className="mt-6 text-padel underline text-sm">Retour à l'accueil</button>
                     </div>
                 );
             }
@@ -270,7 +297,11 @@
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Choix du Tournoi</label>
                                 <select value={selectedTourneyId} onChange={e => setSelectedTourneyId(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors">
-                                    {openTournaments.map(t => <option key={t.id} value={t.id}>{t.name} ({t.teams.length}/{t.maxTeams} équipes)</option>)}
+                                    {openTournaments.map(t => {
+                                        const tConfirmed = t.teams.filter(x => x.status !== 'waitlist').length;
+                                        const tWaitlist = t.teams.filter(x => x.status === 'waitlist').length;
+                                        return <option key={t.id} value={t.id}>{t.name} ({tConfirmed}/{t.maxTeams} places {tWaitlist > 0 ? `| ${tWaitlist} en attente` : ''})</option>
+                                    })}
                                 </select>
                             </div>
                             {activeTourney && (
@@ -278,10 +309,16 @@
                                     <div className="flex justify-between items-center border-b border-dark-border pb-2"><span className="text-gray-400">Date du tournoi</span><span className="text-white font-bold">{new Date(activeTourney.date).toLocaleDateString('fr-FR')}</span></div>
                                     <div className="flex justify-between items-center border-b border-dark-border pb-2"><span className="text-gray-400">Limite d'inscription</span><span className={`font-bold ${isPastDeadline ? 'text-red-400' : 'text-white'}`}>{new Date(activeTourney.registrationDeadline).toLocaleDateString('fr-FR')}</span></div>
                                     <div className="flex justify-between items-center"><span className="text-gray-400">Prix par paire</span><span className="text-padel font-bold text-lg">{activeTourney.price} €</span></div>
+                                    
+                                    {isMainFull && !isTotallyFull && (
+                                        <div className="mt-2 bg-yellow-900/30 border border-yellow-800 text-yellow-500 p-2 rounded text-xs text-center font-bold">
+                                            Tournoi plein. Inscription en liste d'attente ({waitlistTeamsCount}/4 places occupées).
+                                        </div>
+                                    )}
                                 </div>
                             )}
-                            {isFull ? (
-                                <div className="bg-red-900/30 border border-red-800 text-red-300 p-4 rounded-lg text-center font-medium mt-4">Désolé, ce tournoi est déjà complet !</div>
+                            {isTotallyFull ? (
+                                <div className="bg-red-900/30 border border-red-800 text-red-300 p-4 rounded-lg text-center font-medium mt-4">Désolé, ce tournoi et sa liste d'attente sont complets !</div>
                             ) : isPastDeadline ? (
                                 <div className="bg-red-900/30 border border-red-800 text-red-300 p-4 rounded-lg text-center font-medium mt-4">Les inscriptions pour ce tournoi sont clôturées depuis le {new Date(activeTourney.registrationDeadline).toLocaleDateString('fr-FR')}.</div>
                             ) : (
@@ -301,8 +338,13 @@
                                         <input type="email" required value={teamEmail} onChange={e=>setTeamEmail(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors" placeholder="Adresse e-mail" />
                                     </div>
                                     <div className="pt-4">
-                                        <button type="submit" disabled={!p1 || !p2 || !l1 || !l2 || !teamEmail} className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-bold py-4 rounded-lg flex justify-center items-center space-x-2 transition-all disabled:opacity-50"><IconCreditCard /><span>S'inscrire {activeTourney.paymentLink ? "& Payer en ligne" : ""}</span></button>
-                                        <p className="text-xs text-center text-gray-500 mt-3">Paiement sécurisé. Non remboursable à moins de 48h du tournoi.</p>
+                                        <button type="submit" disabled={!p1 || !p2 || !l1 || !l2 || !teamEmail} className={`w-full ${isMainFull ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-padel hover:bg-padel-dark'} text-dark-bg font-bold py-4 rounded-lg flex justify-center items-center space-x-2 transition-all disabled:opacity-50`}>
+                                            <IconCreditCard />
+                                            <span>
+                                                {isMainFull ? "S'inscrire en Liste d'Attente" : `S'inscrire ${activeTourney.paymentLink ? "& Payer en ligne" : ""}`}
+                                            </span>
+                                        </button>
+                                        {!isMainFull && <p className="text-xs text-center text-gray-500 mt-3">Paiement sécurisé. Non remboursable à moins de 48h du tournoi.</p>}
                                     </div>
                                 </>
                             )}
@@ -389,14 +431,13 @@
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {readySchedule.map((m) => {
-                            const d = new Date(m.estStart);
-                            const timeStr = m.estStart <= Date.now() + 60000 ? "Imminent" : `${d.getHours().toString().padStart(2, '0')}h${d.getMinutes().toString().padStart(2, '0')}`;
+                            const timeStr = m.estStart === null ? "En attente de terrain" : (m.estStart <= Date.now() + 60000 ? "Imminent" : `${new Date(m.estStart).getHours().toString().padStart(2, '0')}h${new Date(m.estStart).getMinutes().toString().padStart(2, '0')}`);
                             return (
                                 <div key={m.id} className="glass-panel p-4 rounded-xl border border-dark-border flex flex-col justify-between">
                                     <div className="flex justify-between items-start mb-3">
                                         <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{m.bracketName} - {m.title}</span>
-                                        <span className="bg-yellow-500/20 text-yellow-500 text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap">
-                                            Prévu ~ {timeStr}
+                                        <span className={`bg-yellow-500/20 ${m.estStart === null ? 'text-gray-400 bg-gray-500/20' : 'text-yellow-500'} text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap`}>
+                                            {m.estStart === null ? timeStr : `Prévu ~ ${timeStr}`}
                                         </span>
                                     </div>
                                     <div className="space-y-2">
@@ -434,13 +475,12 @@
                             </thead>
                             <tbody className="divide-y divide-dark-border">
                                 {schedule.map(m => {
-                                    const d = new Date(m.estStart);
-                                    const isImminent = m.estStart <= Date.now() + 60000;
-                                    const timeStr = isImminent ? "Imminent" : `${d.getHours().toString().padStart(2, '0')}h${d.getMinutes().toString().padStart(2, '0')}`;
+                                    const isImminent = m.estStart !== null && m.estStart <= Date.now() + 60000;
+                                    const timeStr = m.estStart === null ? "En pause" : (isImminent ? "Imminent" : `${new Date(m.estStart).getHours().toString().padStart(2, '0')}h${new Date(m.estStart).getMinutes().toString().padStart(2, '0')}`);
                                     
                                     return (
                                         <tr key={m.id} className="hover:bg-dark-card/50 transition-colors">
-                                            <td className="p-4 font-bold text-yellow-500 whitespace-nowrap">
+                                            <td className={`p-4 font-bold ${m.estStart === null ? 'text-gray-500' : 'text-yellow-500'} whitespace-nowrap`}>
                                                 {isImminent && <span className="w-2 h-2 inline-block rounded-full bg-yellow-500 animate-pulse mr-2"></span>}
                                                 {timeStr}
                                             </td>
@@ -495,9 +535,9 @@
                         return a.matchIdx - b.matchIdx;
                     });
 
-                // Calcul intelligent : On se base UNIQUEMENT sur les terrains valides (1 à numCourts)
                 let courtTimes = [];
                 for (let i = 1; i <= activeTourney.numCourts; i++) {
+                    if ((activeTourney.inactiveCourts || []).includes(i)) continue;
                     const playingOnThisCourt = playingMatches.find(m => m.courtId === i);
                     if (playingOnThisCourt) {
                         courtTimes.push(Math.max(now, (playingOnThisCourt.startTime || now) + 45 * 60000));
@@ -508,10 +548,14 @@
                 courtTimes.sort((a, b) => a - b);
 
                 upcomingMatches.forEach(m => {
-                    const estStart = courtTimes[0]; 
-                    fullSchedule.push({ ...m, estStart });
-                    courtTimes[0] = estStart + 45 * 60000; 
-                    courtTimes.sort((a, b) => a - b); 
+                    if (courtTimes.length > 0) {
+                        const estStart = courtTimes[0]; 
+                        fullSchedule.push({ ...m, estStart });
+                        courtTimes[0] = estStart + 45 * 60000; 
+                        courtTimes.sort((a, b) => a - b); 
+                    } else {
+                        fullSchedule.push({ ...m, estStart: null });
+                    }
                 });
             }
 
@@ -549,9 +593,123 @@
                                     <div className="h-px bg-dark-border w-full my-8"></div>
                                 </React.Fragment>
                             ))}
-
-                            <GlobalSchedule schedule={fullSchedule} />
                         </>
+                    )}
+                </div>
+            );
+        };
+
+        const ScheduleView = ({ tournaments, activeLiveId, setActiveLiveId }) => {
+            const [tick, setTick] = useState(0);
+            useEffect(() => {
+                const timer = setInterval(() => setTick(t => t + 1), 30000);
+                return () => clearInterval(timer);
+            }, []);
+
+            const activeTourney = tournaments.find(t => t.id === activeLiveId) || tournaments[0];
+            if (!activeTourney) return <div className="text-center py-20 text-gray-400">Aucun tournoi disponible.</div>;
+
+            let fullSchedule = [];
+            
+            if (activeTourney.status === 'started' && activeTourney.matches) {
+                const now = Date.now();
+                const playingMatches = activeTourney.matches.filter(m => m.status === 'playing');
+                const upcomingMatches = activeTourney.matches.filter(m => m.status === 'ready' || m.status === 'pending')
+                    .sort((a, b) => {
+                        if (a.round !== b.round) return a.round - b.round;
+                        if (a.bracket !== b.bracket) {
+                            if(a.bracket === 'main') return -1;
+                            if(b.bracket === 'main') return 1;
+                            return a.bracket.localeCompare(b.bracket);
+                        }
+                        return a.matchIdx - b.matchIdx;
+                    });
+
+                let courtTimes = [];
+                for (let i = 1; i <= activeTourney.numCourts; i++) {
+                    if ((activeTourney.inactiveCourts || []).includes(i)) continue;
+                    const playingOnThisCourt = playingMatches.find(m => m.courtId === i);
+                    if (playingOnThisCourt) {
+                        courtTimes.push(Math.max(now, (playingOnThisCourt.startTime || now) + 45 * 60000));
+                    } else {
+                        courtTimes.push(now);
+                    }
+                }
+                courtTimes.sort((a, b) => a - b);
+
+                upcomingMatches.forEach(m => {
+                    if (courtTimes.length > 0) {
+                        const estStart = courtTimes[0]; 
+                        fullSchedule.push({ ...m, estStart });
+                        courtTimes[0] = estStart + 45 * 60000; 
+                        courtTimes.sort((a, b) => a - b); 
+                    } else {
+                        fullSchedule.push({ ...m, estStart: null });
+                    }
+                });
+            }
+
+            return (
+                <div className="space-y-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-dark-border pb-4 mb-8 gap-4">
+                        <div>
+                            <h2 className="text-3xl font-black uppercase tracking-tight text-white flex items-center gap-3">
+                                <IconClock /> Échéancier Global
+                            </h2>
+                            <p className="text-padel font-medium">Prévisions ajustées en direct selon l'occupation des terrains</p>
+                        </div>
+                        <div className="w-full md:w-auto">
+                            <label className="block text-xs uppercase text-gray-500 font-bold mb-1">Sélectionner un tournoi</label>
+                            <select value={activeLiveId} onChange={e => setActiveLiveId(Number(e.target.value))} className="w-full md:w-64 bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-white font-medium focus:border-padel focus:outline-none">
+                                {tournaments.map(t => <option key={t.id} value={t.id}>{t.name} {t.status === 'open' ? '(Inscriptions)' : '(En cours)'}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    {activeTourney.status === 'open' ? (
+                        <div className="text-center py-20">
+                            <div className="inline-block p-4 rounded-full bg-dark-card text-gray-500 mb-4"><IconClock size={32} /></div>
+                            <h2 className="text-3xl font-bold mb-2">Tournoi en phase d'inscription</h2>
+                            <p className="text-gray-400">L'échéancier sera généré automatiquement au lancement du tournoi.</p>
+                        </div>
+                    ) : (
+                        <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto">
+                            <table className="w-full text-left text-sm text-gray-300">
+                                <thead className="bg-dark-card border-b border-dark-border text-xs uppercase text-gray-500">
+                                    <tr>
+                                        <th className="p-4 w-32 whitespace-nowrap">Heure est.</th>
+                                        <th className="p-4 min-w-[200px]">Phase du Tournoi</th>
+                                        <th className="p-4">Équipe 1</th>
+                                        <th className="p-4 text-center">VS</th>
+                                        <th className="p-4">Équipe 2</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-dark-border">
+                                    {fullSchedule.length === 0 ? (
+                                        <tr><td colSpan="5" className="p-8 text-center text-gray-500 italic">Tous les matchs sont terminés.</td></tr>
+                                    ) : fullSchedule.map(m => {
+                                        const isImminent = m.estStart !== null && m.estStart <= Date.now() + 60000;
+                                        const timeStr = m.estStart === null ? "En pause" : (isImminent ? "Imminent" : `${new Date(m.estStart).getHours().toString().padStart(2, '0')}h${new Date(m.estStart).getMinutes().toString().padStart(2, '0')}`);
+                                        
+                                        return (
+                                            <tr key={m.id} className="hover:bg-dark-card/50 transition-colors">
+                                                <td className={`p-4 font-bold ${m.estStart === null ? 'text-gray-500' : 'text-yellow-500'} whitespace-nowrap`}>
+                                                    {isImminent && <span className="w-2 h-2 inline-block rounded-full bg-yellow-500 animate-pulse mr-2"></span>}
+                                                    {timeStr}
+                                                </td>
+                                                <td className="p-4">
+                                                    <div className="font-bold text-white">{m.bracketName}</div>
+                                                    <div className="text-xs text-gray-500">{m.title}</div>
+                                                </td>
+                                                <td className={`p-4 font-medium truncate max-w-[200px] ${m.team1 ? 'text-white' : 'text-gray-500 italic'}`}>{m.team1 ? m.team1.name : 'À déterminer'}</td>
+                                                <td className="p-4 text-center text-xs font-black text-gray-600">VS</td>
+                                                <td className={`p-4 font-medium truncate max-w-[200px] ${m.team2 ? 'text-white' : 'text-gray-500 italic'}`}>{m.team2 ? m.team2.name : 'À déterminer'}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     )}
                 </div>
             );
@@ -642,7 +800,7 @@
             );
         };
 
-        const AdminView = ({ tournaments, updateTournaments, activeAdminId, setActiveAdminId, startTournament, updateMatchDraft, submitMatchResult, adminAuth, setAdminAuth, updateActiveNumCourts, deleteTournament, editPastMatch }) => {
+        const AdminView = ({ tournaments, updateTournaments, activeAdminId, setActiveAdminId, startTournament, updateMatchDraft, submitMatchResult, adminAuth, setAdminAuth, updateActiveNumCourts, deleteTournament, editPastMatch, toggleCourt }) => {
             const [password, setPassword] = useState('');
             const [error, setError] = useState('');
             const [notification, setNotification] = useState('');
@@ -683,10 +841,11 @@
 
             let p2 = 4; let computedSlots = [];
             if (activeTourney && activeTourney.status === 'open') {
-                p2 = Math.pow(2, Math.ceil(Math.log2(Math.max(4, activeTourney.teams.length))));
+                const confirmedTeams = activeTourney.teams.filter(t => t.status !== 'waitlist');
+                p2 = Math.pow(2, Math.ceil(Math.log2(Math.max(4, confirmedTeams.length))));
                 computedSlots = Array(p2).fill(null);
                 let unassignedTeams = [];
-                activeTourney.teams.forEach(t => {
+                confirmedTeams.forEach(t => {
                     if (t.slot >= 0 && t.slot < p2 && computedSlots[t.slot] === null) computedSlots[t.slot] = t;
                     else unassignedTeams.push(t);
                 });
@@ -701,7 +860,7 @@
                     if (t.id !== activeTourney.id) return t;
                     let newTeams = [...t.teams];
                     let tempSlots = Array(p2).fill(null); let tempUnassigned = [];
-                    newTeams.forEach(tm => {
+                    newTeams.filter(tm => tm.status !== 'waitlist').forEach(tm => {
                         if (tm.slot >= 0 && tm.slot < p2 && tempSlots[tm.slot] === null) tempSlots[tm.slot] = tm;
                         else tempUnassigned.push(tm);
                     });
@@ -711,12 +870,12 @@
                     });
 
                     if (!teamIdStr) {
-                        const currentTeamIdx = newTeams.findIndex(tm => tm.slot === slotIndex);
+                        const currentTeamIdx = newTeams.findIndex(tm => tm.slot === slotIndex && tm.status !== 'waitlist');
                         if (currentTeamIdx !== -1) newTeams[currentTeamIdx] = { ...newTeams[currentTeamIdx], slot: null };
                     } else {
                         const teamId = Number(teamIdStr);
                         const targetTeamIdx = newTeams.findIndex(tm => tm.id === teamId);
-                        const occupyingTeamIdx = newTeams.findIndex(tm => tm.slot === slotIndex);
+                        const occupyingTeamIdx = newTeams.findIndex(tm => tm.slot === slotIndex && tm.status !== 'waitlist');
                         if (targetTeamIdx !== -1) {
                             const oldSlot = newTeams[targetTeamIdx].slot;
                             if (occupyingTeamIdx !== -1 && occupyingTeamIdx !== targetTeamIdx) {
@@ -735,7 +894,7 @@
                 const newTourney = {
                     id: Date.now(), name: newTourneyName, date: newTourneyDate, registrationDeadline: newTourneyDeadline,
                     price: newTourneyPrice, maxTeams: newTourneyMaxTeams, numCourts: newTourneyCourts, paymentLink: newTourneyPaymentLink,
-                    status: 'open', teams: [], matches: []
+                    status: 'open', teams: [], matches: [], inactiveCourts: []
                 };
                 updateTournaments(prev => [...prev, newTourney]);
                 setActiveAdminId(newTourney.id);
@@ -752,7 +911,8 @@
                     email: `equipe${i+1}@test.fr`,
                     paid: true,
                     rank: i + 1,
-                    slot: i 
+                    slot: i,
+                    status: 'confirmed'
                 }));
                 
                 const newTourney = {
@@ -763,6 +923,7 @@
                     price: 20,
                     maxTeams: 16,
                     numCourts: 4,
+                    inactiveCourts: [],
                     paymentLink: "",
                     status: 'open',
                     teams: testTeams,
@@ -771,6 +932,33 @@
                 
                 updateTournaments(prev => [...prev, newTourney]);
                 setActiveAdminId(newTourney.id);
+            };
+
+            const removeTeam = (tourneyId, teamId) => {
+                if (!window.confirm("Supprimer définitivement cette équipe ? Cette action libérera une place si l'équipe était confirmée.")) return;
+
+                updateTournaments(prev => prev.map(t => {
+                    if (t.id !== tourneyId) return t;
+                    const teamToRemove = t.teams.find(tm => tm.id === teamId);
+                    let newTeams = t.teams.filter(tm => tm.id !== teamId);
+
+                    if (teamToRemove && teamToRemove.status !== 'waitlist') {
+                        const waitlistTeam = newTeams.find(tm => tm.status === 'waitlist');
+                        if (waitlistTeam) {
+                            waitlistTeam.status = 'confirmed';
+                            if (waitlistTeam.email) sendEmailNotification('promoted', { to_email: waitlistTeam.email, team_name: waitlistTeam.name, tourney_name: t.name });
+                            setNotification(`Équipe supprimée. ${waitlistTeam.name} a été promue en liste principale.`);
+                            setTimeout(() => setNotification(''), 6000);
+                        } else {
+                            setNotification(`Équipe supprimée. Une place s'est libérée.`);
+                            setTimeout(() => setNotification(''), 4000);
+                        }
+                    } else {
+                        setNotification(`Équipe retirée de la liste d'attente.`);
+                        setTimeout(() => setNotification(''), 4000);
+                    }
+                    return { ...t, teams: newTeams };
+                }));
             };
 
             const togglePayment = (tourneyId, team) => {
@@ -804,6 +992,7 @@
             }
 
             const activeMatches = activeTourney?.matches.filter(m => m.status === 'playing') || [];
+            const activeCourtsCount = activeTourney ? activeTourney.numCourts - (activeTourney.inactiveCourts || []).length : 0;
             
             return (
                 <div className="space-y-8 relative">
@@ -881,7 +1070,7 @@
                                 <div><label className="text-xs text-gray-500 mb-1 block">Lien de paiement (Optionnel)</label><input type="url" placeholder="https://buy.stripe.com/..." value={newTourneyPaymentLink} onChange={e=>setNewTourneyPaymentLink(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                 <div className="flex gap-2">
                                     <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Équipes max</label><input type="number" min="4" value={newTourneyMaxTeams} onChange={e=>setNewTourneyMaxTeams(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
-                                    <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Terrains</label><input type="number" min="1" value={newTourneyCourts} onChange={e=>setNewTourneyCourts(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
+                                    <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Total Terrains</label><input type="number" min="1" value={newTourneyCourts} onChange={e=>setNewTourneyCourts(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                 </div>
                                 <div className="flex gap-2 mt-2">
                                     <button type="submit" className="flex-1 bg-padel/20 hover:bg-padel/40 text-padel font-bold py-2 rounded transition-colors">Créer</button>
@@ -913,8 +1102,8 @@
                                     <div>
                                         <h3 className="text-xl font-bold text-white flex items-center gap-2"><IconTrophy/> Placement dans l'arbre (Têtes de série)</h3>
                                         <p className="text-sm text-gray-400 mt-1">
-                                            Modifiez les affrontements du premier tour. 
-                                            Pour <strong>exempter une équipe</strong> (lui faire passer le premier tour), placez-la contre <strong>--- Vide (BYE) ---</strong>.
+                                            Modifiez les affrontements du premier tour (Liste Principale uniquement). 
+                                            Pour <strong>exempter une équipe</strong>, placez-la contre <strong>--- Vide (BYE) ---</strong>.
                                         </p>
                                     </div>
                                     <div className="text-padel font-bold bg-padel/10 px-4 py-2 rounded-lg text-sm whitespace-nowrap">Arbre de {p2} équipes</div>
@@ -928,12 +1117,12 @@
                                                 <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Match {matchIdx + 1}</div>
                                                 <select value={team1 ? team1.id : ''} onChange={e => handleSlotChange(slot1, e.target.value)} className={`w-full border rounded px-2 py-2 text-sm focus:outline-none transition-colors cursor-pointer ${team1 ? 'bg-dark-card border-padel/50 text-white font-medium' : 'bg-dark-bg border-dark-border text-gray-600 italic'}`}>
                                                     <option value="">--- Vide (BYE) ---</option>
-                                                    {activeTourney.teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                                    {activeTourney.teams.filter(t=>t.status !== 'waitlist').map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                 </select>
                                                 <div className="text-center text-[10px] text-gray-600 font-black">VS</div>
                                                 <select value={team2 ? team2.id : ''} onChange={e => handleSlotChange(slot2, e.target.value)} className={`w-full border rounded px-2 py-2 text-sm focus:outline-none transition-colors cursor-pointer ${team2 ? 'bg-dark-card border-padel/50 text-white font-medium' : 'bg-dark-bg border-dark-border text-gray-600 italic'}`}>
                                                     <option value="">--- Vide (BYE) ---</option>
-                                                    {activeTourney.teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                                    {activeTourney.teams.filter(t=>t.status !== 'waitlist').map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                 </select>
                                             </div>
                                         );
@@ -959,18 +1148,26 @@
                                 <div className="glass-panel p-6 rounded-xl">
                                     <h3 className="text-xl font-bold mb-4 border-b border-dark-border pb-2 flex justify-between">
                                         <span>Équipes inscrites</span>
-                                        <span className={activeTourney.teams.length >= activeTourney.maxTeams ? "text-red-400" : "text-padel"}>{activeTourney.teams.length} / {activeTourney.maxTeams}</span>
+                                        <span className={activeTourney.teams.filter(t=>t.status !== 'waitlist').length >= activeTourney.maxTeams ? "text-red-400" : "text-padel"}>
+                                            {activeTourney.teams.filter(t=>t.status !== 'waitlist').length} / {activeTourney.maxTeams}
+                                        </span>
                                     </h3>
                                     <ul className="space-y-2 max-h-64 overflow-y-auto pr-2">
                                         {activeTourney.teams.map((t, idx) => (
-                                            <li key={t.id} className="flex justify-between items-center bg-dark-bg p-3 rounded border border-dark-border">
+                                            <li key={t.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-dark-bg p-3 rounded border border-dark-border gap-2">
                                                 <div>
-                                                    <div className="font-medium">{t.name}</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-medium">{t.name}</span>
+                                                        {t.status === 'waitlist' && <span className="bg-yellow-900/50 text-yellow-500 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">En attente</span>}
+                                                    </div>
                                                     {(t.l1 || t.l2) && <div className="text-[10px] text-gray-500 font-mono mt-0.5">Licences: {t.l1} / {t.l2}</div>}
                                                     {t.email && <div className="text-[10px] text-padel font-mono mt-0.5">{t.email}</div>}
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    {t.paid ? <span className="text-xs bg-green-900/50 text-green-400 px-2 py-1 rounded uppercase">Payé</span> : <button onClick={() => togglePayment(activeTourney.id, t)} className="text-xs bg-yellow-900/50 text-yellow-400 hover:bg-yellow-800/50 px-2 py-1 rounded uppercase transition-colors">Valider Paiement</button>}
+                                                <div className="flex items-center justify-between sm:justify-end gap-2 border-t border-dark-border sm:border-t-0 pt-2 sm:pt-0">
+                                                    {t.paid ? <span className="text-xs bg-green-900/50 text-green-400 px-2 py-1 rounded uppercase flex-1 text-center sm:flex-none">Payé</span> : <button onClick={() => togglePayment(activeTourney.id, t)} className="text-xs bg-yellow-900/50 text-yellow-400 hover:bg-yellow-800/50 px-2 py-1 rounded uppercase transition-colors flex-1 sm:flex-none">Valider Paiement</button>}
+                                                    <button onClick={() => removeTeam(activeTourney.id, t.id)} className="text-gray-500 hover:text-red-400 transition-colors p-1" title="Supprimer l'équipe">
+                                                        <IconTrash />
+                                                    </button>
                                                 </div>
                                             </li>
                                         ))}
@@ -981,20 +1178,44 @@
                         </>
                     ) : (
                         <div className="space-y-8">
-                            <div className="bg-dark-card border border-dark-border p-5 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg">
-                                <div>
+                            <div className="bg-dark-card border border-dark-border p-5 rounded-xl flex flex-col items-start gap-4 shadow-lg">
+                                <div className="w-full">
                                     <h3 className="font-bold text-white text-lg flex items-center gap-2"><IconSettings /> Gestion des Terrains en direct</h3>
-                                    <p className="text-sm text-gray-400 mt-1">Modifiez le nombre de terrains disponibles. Les matchs en cours se termineront sur leur terrain actuel.</p>
+                                    <p className="text-sm text-gray-400 mt-1">Définissez le nombre total de terrains de votre complexe, puis cliquez sur chaque terrain pour l'activer ou le fermer pour ce tournoi. Les matchs en cours se termineront sur leur terrain actuel.</p>
                                 </div>
-                                <div className="flex items-center gap-3 bg-dark-bg p-2 rounded-lg border border-dark-border">
-                                    <label className="text-sm text-gray-300 font-bold px-2">Terrains actifs :</label>
-                                    <input type="number" min="1" max="20" value={activeTourney.numCourts} onChange={e => updateActiveNumCourts(activeTourney.id, parseInt(e.target.value) || 1)} className="w-20 bg-dark-card border border-dark-border rounded px-3 py-2 text-padel font-black focus:border-padel focus:outline-none text-center" />
+                                
+                                <div className="flex flex-col gap-3 w-full">
+                                    <div className="flex items-center gap-3 bg-dark-bg p-2 rounded-lg border border-dark-border w-max">
+                                        <label className="text-sm text-gray-300 font-bold px-2">Total Terrains :</label>
+                                        <input type="number" min="1" max="20" value={activeTourney.numCourts} onChange={e => updateActiveNumCourts(activeTourney.id, parseInt(e.target.value) || 1)} className="w-20 bg-dark-card border border-dark-border rounded px-3 py-2 text-padel font-black focus:border-padel focus:outline-none text-center" />
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-4 mt-2">
+                                        {Array.from({ length: activeTourney.numCourts }).map((_, i) => {
+                                            const courtId = i + 1;
+                                            const isInactive = (activeTourney.inactiveCourts || []).includes(courtId);
+                                            return (
+                                                <button 
+                                                    key={courtId} 
+                                                    onClick={() => toggleCourt(activeTourney.id, courtId)}
+                                                    className={`relative w-20 h-28 rounded-lg border-2 transition-all flex flex-col items-center justify-center overflow-hidden
+                                                        ${!isInactive ? 'bg-padel/20 border-padel shadow-[0_0_15px_rgba(190,242,100,0.3)] hover:bg-padel/30' : 'bg-dark-bg border-dark-border opacity-50 hover:opacity-80'}`}
+                                                    title={!isInactive ? `Désactiver le Terrain ${courtId}` : `Activer le Terrain ${courtId}`}
+                                                >
+                                                    <div className={`absolute top-1/2 left-0 w-full h-[2px] ${!isInactive ? 'bg-padel/50' : 'bg-dark-border'}`}></div>
+                                                    <div className={`absolute top-1/4 left-1/4 w-1/2 h-1/2 border-[2px] rounded-sm ${!isInactive ? 'border-padel/30' : 'border-dark-border/50'}`}></div>
+                                                    <span className={`font-black text-2xl z-10 ${!isInactive ? 'text-padel drop-shadow-md' : 'text-gray-500'}`}>{courtId}</span>
+                                                    <span className={`text-[10px] z-10 mt-1 uppercase font-bold tracking-widest ${!isInactive ? 'text-white' : 'text-gray-600'}`}>{!isInactive ? 'Actif' : 'Fermé'}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
 
                             <div>
                                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-padel">
-                                    <span className="w-2 h-2 rounded-full bg-padel animate-pulse"></span> Matchs en cours ({activeMatches.length}/{activeTourney.numCourts})
+                                    <span className="w-2 h-2 rounded-full bg-padel animate-pulse"></span> Matchs en cours ({activeMatches.length}/{activeCourtsCount})
                                 </h3>
                                 {activeMatches.length === 0 ? (
                                     <p className="text-gray-500 italic glass-panel p-6 rounded-xl text-center">Aucun match en cours. Le tournoi est peut-être terminé.</p>
@@ -1148,16 +1369,16 @@
             
             const [tournaments, setTournaments] = useState([{
                 id: 1, name: "Tournoi Inaugural PadelPro", date: "2026-06-15", registrationDeadline: "2026-06-10", price: 25,
-                maxTeams: 8, numCourts: 3, paymentLink: "", status: 'open', 
+                maxTeams: 8, numCourts: 4, inactiveCourts: [], paymentLink: "", status: 'open', 
                 teams: [
-                    { id: 1, name: "Dupont / Durand", l1: "111", l2: "222", email: "dupont@mail.fr", rank: 1, paid: true },
-                    { id: 2, name: "Martin / Bernard", l1: "111", l2: "222", email: "martin@mail.fr", rank: 2, paid: true },
-                    { id: 3, name: "Petit / Robert", l1: "111", l2: "222", email: "petit@mail.fr", rank: 3, paid: true },
-                    { id: 4, name: "Richard / Garcia", l1: "111", l2: "222", email: "richard@mail.fr", rank: 4, paid: true },
-                    { id: 5, name: "Moreau / Simon", l1: "111", l2: "222", email: "moreau@mail.fr", rank: 5, paid: true },
-                    { id: 6, name: "Laurent / Lefebvre", l1: "111", l2: "222", email: "laurent@mail.fr", rank: 6, paid: true },
-                    { id: 7, name: "Michel / Roux", l1: "111", l2: "222", email: "michel@mail.fr", rank: 7, paid: true },
-                    { id: 8, name: "David / Vincent", l1: "111", l2: "222", email: "david@mail.fr", rank: 8, paid: true }
+                    { id: 1, name: "Dupont / Durand", l1: "111", l2: "222", email: "dupont@mail.fr", rank: 1, paid: true, status: 'confirmed' },
+                    { id: 2, name: "Martin / Bernard", l1: "111", l2: "222", email: "martin@mail.fr", rank: 2, paid: true, status: 'confirmed' },
+                    { id: 3, name: "Petit / Robert", l1: "111", l2: "222", email: "petit@mail.fr", rank: 3, paid: true, status: 'confirmed' },
+                    { id: 4, name: "Richard / Garcia", l1: "111", l2: "222", email: "richard@mail.fr", rank: 4, paid: true, status: 'confirmed' },
+                    { id: 5, name: "Moreau / Simon", l1: "111", l2: "222", email: "moreau@mail.fr", rank: 5, paid: true, status: 'confirmed' },
+                    { id: 6, name: "Laurent / Lefebvre", l1: "111", l2: "222", email: "laurent@mail.fr", rank: 6, paid: true, status: 'confirmed' },
+                    { id: 7, name: "Michel / Roux", l1: "111", l2: "222", email: "michel@mail.fr", rank: 7, paid: true, status: 'confirmed' },
+                    { id: 8, name: "David / Vincent", l1: "111", l2: "222", email: "david@mail.fr", rank: 8, paid: true, status: 'confirmed' }
                 ], matches: []
             }]);
 
@@ -1234,11 +1455,11 @@
                 return updated;
             };
 
-            const assignCourts = (currentMatches, numCourts) => {
+            const assignCourts = (currentMatches, numCourts, inactiveCourts = []) => {
                 let updated = [...currentMatches];
                 const playing = updated.filter(m => m.status === 'playing');
                 const usedCourts = playing.map(m => m.courtId);
-                const availableCourts = Array.from({length: numCourts}, (_, i) => i + 1).filter(id => !usedCourts.includes(id));
+                const availableCourts = Array.from({length: numCourts}, (_, i) => i + 1).filter(id => !usedCourts.includes(id) && !inactiveCourts.includes(id));
                 const readyMatches = updated.filter(m => m.status === 'ready').sort((a,b) => (a.bracket === 'main' ? -1 : 1) || a.round - b.round);
                 let courtIdx = 0;
                 for (let m of readyMatches) {
@@ -1252,13 +1473,15 @@
 
             const startTournament = (tourneyId) => {
                 const tourney = tournaments.find(t => t.id === tourneyId);
-                if(tourney.teams.length < 3) { alert("Il faut au moins 3 équipes."); return; }
-                const p2 = Math.pow(2, Math.ceil(Math.log2(Math.max(4, tourney.teams.length))));
+                const confirmedTeams = tourney.teams.filter(t => t.status !== 'waitlist');
+                
+                if(confirmedTeams.length < 3) { alert("Il faut au moins 3 équipes confirmées pour lancer."); return; }
+                const p2 = Math.pow(2, Math.ceil(Math.log2(Math.max(4, confirmedTeams.length))));
                 
                 let paddedTeams = Array(p2).fill(null);
                 let unassignedTeams = [];
                 
-                tourney.teams.forEach(t => {
+                confirmedTeams.forEach(t => {
                     if (t.slot >= 0 && t.slot < p2 && paddedTeams[t.slot] === null) paddedTeams[t.slot] = t;
                     else unassignedTeams.push(t);
                 });
@@ -1322,7 +1545,7 @@
                     currentBlocks = nextBlocks;
                 }
 
-                const finalMatches = assignCourts(rebuildMatches(newMatches), tourney.numCourts);
+                const finalMatches = assignCourts(rebuildMatches(newMatches), tourney.numCourts, tourney.inactiveCourts);
                 updateTournaments(prev => prev.map(t => t.id === tourneyId ? { ...t, status: 'started', matches: finalMatches } : t));
             };
 
@@ -1347,7 +1570,7 @@
                     m.score = match.score;
                     m.status = 'finished';
 
-                    updatedMatches = assignCourts(rebuildMatches(updatedMatches), t.numCourts);
+                    updatedMatches = assignCourts(rebuildMatches(updatedMatches), t.numCourts, t.inactiveCourts);
                     return { ...t, matches: updatedMatches };
                 }));
             };
@@ -1362,7 +1585,7 @@
                         m.score = newScore || '';
                         m.status = newWinnerId ? 'finished' : 'pending'; 
                     }
-                    updatedMatches = assignCourts(rebuildMatches(updatedMatches), t.numCourts);
+                    updatedMatches = assignCourts(rebuildMatches(updatedMatches), t.numCourts, t.inactiveCourts);
                     return { ...t, matches: updatedMatches };
                 }));
             };
@@ -1370,11 +1593,26 @@
             const updateActiveNumCourts = (tourneyId, newNumCourts) => {
                 updateTournaments(prev => prev.map(t => {
                     if (t.id !== tourneyId) return t;
+                    const newInactive = (t.inactiveCourts || []).filter(id => id <= newNumCourts);
                     if (t.status === 'started') {
-                        const updatedMatches = assignCourts(t.matches, newNumCourts);
-                        return { ...t, numCourts: newNumCourts, matches: updatedMatches };
+                        const updatedMatches = assignCourts(t.matches, newNumCourts, newInactive);
+                        return { ...t, numCourts: newNumCourts, inactiveCourts: newInactive, matches: updatedMatches };
                     }
-                    return { ...t, numCourts: newNumCourts };
+                    return { ...t, numCourts: newNumCourts, inactiveCourts: newInactive };
+                }));
+            };
+
+            const toggleCourt = (tourneyId, courtId) => {
+                updateTournaments(prev => prev.map(t => {
+                    if (t.id !== tourneyId) return t;
+                    const inactiveCourts = t.inactiveCourts || [];
+                    const isInactive = inactiveCourts.includes(courtId);
+                    let newInactive = isInactive ? inactiveCourts.filter(id => id !== courtId) : [...inactiveCourts, courtId];
+                    if (t.status === 'started') {
+                        const updatedMatches = assignCourts(t.matches, t.numCourts, newInactive);
+                        return { ...t, inactiveCourts: newInactive, matches: updatedMatches };
+                    }
+                    return { ...t, inactiveCourts: newInactive };
                 }));
             };
 
@@ -1407,6 +1645,7 @@
                                     <div className="hidden md:flex space-x-1">
                                         <NavBtn active={view === 'register'} onClick={() => setView('register')} icon={<IconUser/>}>Inscription</NavBtn>
                                         <NavBtn active={view === 'live'} onClick={() => setView('live')} icon={<IconPlay/>}>En Direct</NavBtn>
+                                        <NavBtn active={view === 'schedule'} onClick={() => setView('schedule')} icon={<IconClock/>}>Échéancier</NavBtn>
                                         <NavBtn active={view === 'score'} onClick={() => setView('score')} icon={<IconTablet/>}>Score</NavBtn>
                                         <NavBtn active={view === 'admin'} onClick={() => setView('admin')} icon={<IconSettings/>}>Organisateur</NavBtn>
                                     </div>
@@ -1418,6 +1657,7 @@
                                     </div>
                                     <div className="md:hidden flex gap-2">
                                        <button onClick={() => setView('live')} className={`p-2 rounded ${view === 'live' ? 'text-padel' : 'text-gray-400'}`}><IconPlay/></button>
+                                       <button onClick={() => setView('schedule')} className={`p-2 rounded ${view === 'schedule' ? 'text-padel' : 'text-gray-400'}`}><IconClock/></button>
                                        <button onClick={() => setView('score')} className={`p-2 rounded ${view === 'score' ? 'text-padel' : 'text-gray-400'}`}><IconTablet/></button>
                                        <button onClick={() => setView('admin')} className={`p-2 rounded ${view === 'admin' ? 'text-padel' : 'text-gray-400'}`}><IconSettings/></button>
                                     </div>
@@ -1430,6 +1670,7 @@
                         <div className={view !== 'home' ? 'print-hide' : ''}>{view === 'home' && <HomeView setView={setView} />}</div>
                         <div className={view !== 'register' ? 'print-hide' : ''}>{view === 'register' && <RegisterView tournaments={tournaments} updateTournaments={updateTournaments} setView={setView} />}</div>
                         <div className={view !== 'live' ? 'print-hide' : ''}>{view === 'live' && <LiveView tournaments={tournaments} activeLiveId={activeLiveId} setActiveLiveId={setActiveLiveId} />}</div>
+                        <div className={view !== 'schedule' ? 'print-hide' : ''}>{view === 'schedule' && <ScheduleView tournaments={tournaments} activeLiveId={activeLiveId} setActiveLiveId={setActiveLiveId} />}</div>
                         <div className={view !== 'score' ? 'print-hide' : ''}>{view === 'score' && <ScoreView 
                             tournaments={tournaments} activeLiveId={activeLiveId} setActiveLiveId={setActiveLiveId}
                             updateMatchDraft={updateMatchDraft} submitMatchResult={submitMatchResult}
@@ -1440,7 +1681,7 @@
                             activeAdminId={activeAdminId} setActiveAdminId={setActiveAdminId}
                             startTournament={startTournament} updateMatchDraft={updateMatchDraft} submitMatchResult={submitMatchResult}
                             adminAuth={adminAuth} setAdminAuth={setAdminAuth} updateActiveNumCourts={updateActiveNumCourts}
-                            deleteTournament={deleteTournament} editPastMatch={editPastMatch}
+                            deleteTournament={deleteTournament} editPastMatch={editPastMatch} toggleCourt={toggleCourt}
                         />}</div>
                     </main>
                 </div>
