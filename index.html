@@ -46,6 +46,12 @@
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        /* Cacher des éléments lors de l'impression du rapport */
+        @media print {
+            body { background-color: white; color: black; }
+            .print-hide { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -96,6 +102,7 @@
         const IconTimer = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2h4"/><path d="M12 14v-4"/><path d="M4 13a8 8 0 0 1 8-8 8 8 0 0 1 8 8 8 8 0 0 1-8 8 8 8 0 0 1-8-8Z"/></svg>;
         const IconPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
         const IconTablet = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>;
+        const IconTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
 
         // --- COMPOSANTS SECONDAIRES & VUES ---
 
@@ -205,11 +212,9 @@
                         </div>
                         <h2 className="text-2xl font-bold mb-2 text-white">Inscription Pré-validée !</h2>
                         <p className="text-gray-400 mb-4">Votre équipe est enregistrée pour <strong>{activeTourney.name}</strong>.</p>
-                        
                         <p className="text-padel text-sm font-bold mb-4">
                             Un e-mail de confirmation de pré-inscription a été envoyé à {teamEmail}.
                         </p>
-
                         {activeTourney.paymentLink ? (
                             <p className="bg-yellow-900/40 text-yellow-300 p-3 rounded text-sm border border-yellow-800">
                                 Un nouvel onglet s'est ouvert pour le paiement. Votre inscription sera définitive une fois le paiement de <strong>{activeTourney.price}€</strong> validé par l'organisateur.
@@ -291,7 +296,6 @@
                                             className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-padel transition-colors"
                                             placeholder="Numéro de licence" />
                                     </div>
-
                                     <div className="bg-dark-card/50 p-4 rounded-xl border border-dark-border space-y-3">
                                         <label className="block text-sm font-bold text-padel uppercase tracking-wider">Contact de l'équipe</label>
                                         <input type="email" required value={teamEmail} onChange={e=>setTeamEmail(e.target.value)}
@@ -630,7 +634,7 @@
             );
         };
 
-        const AdminView = ({ tournaments, updateTournaments, activeAdminId, setActiveAdminId, startTournament, updateMatchDraft, submitMatchResult, adminAuth, setAdminAuth, updateActiveNumCourts }) => {
+        const AdminView = ({ tournaments, updateTournaments, activeAdminId, setActiveAdminId, startTournament, updateMatchDraft, submitMatchResult, adminAuth, setAdminAuth, updateActiveNumCourts, deleteTournament, editPastMatch }) => {
             const [password, setPassword] = useState('');
             const [error, setError] = useState('');
             const [notification, setNotification] = useState('');
@@ -642,6 +646,11 @@
             const [newTourneyMaxTeams, setNewTourneyMaxTeams] = useState(16);
             const [newTourneyCourts, setNewTourneyCourts] = useState(3);
             const [newTourneyPaymentLink, setNewTourneyPaymentLink] = useState('');
+
+            const [showSummary, setShowSummary] = useState(false);
+            const [editingMatchId, setEditingMatchId] = useState(null);
+            const [editWinner, setEditWinner] = useState(null);
+            const [editScore, setEditScore] = useState('');
 
             if (!adminAuth) {
                 const handleLogin = (e) => {
@@ -669,7 +678,6 @@
 
             const activeTourney = tournaments.find(t => t.id === activeAdminId) || tournaments[0];
 
-            // Configuration et Calcul des Placements (Têtes de série)
             let p2 = 4;
             let computedSlots = [];
             if (activeTourney && activeTourney.status === 'open') {
@@ -692,10 +700,7 @@
             const handleSlotChange = (slotIndex, teamIdStr) => {
                 updateTournaments(prev => prev.map(t => {
                     if (t.id !== activeTourney.id) return t;
-                    
                     let newTeams = [...t.teams];
-                    
-                    // Figer tous les slots explicitement pour autoriser l'échange fluide
                     let tempSlots = Array(p2).fill(null);
                     let tempUnassigned = [];
                     newTeams.forEach(tm => {
@@ -711,15 +716,12 @@
                     });
 
                     if (!teamIdStr) {
-                        // Libérer le slot (Le placer à BYE)
                         const currentTeamIdx = newTeams.findIndex(tm => tm.slot === slotIndex);
                         if (currentTeamIdx !== -1) newTeams[currentTeamIdx] = { ...newTeams[currentTeamIdx], slot: null };
                     } else {
-                        // Échanger / Assigner la tête de série
                         const teamId = Number(teamIdStr);
                         const targetTeamIdx = newTeams.findIndex(tm => tm.id === teamId);
                         const occupyingTeamIdx = newTeams.findIndex(tm => tm.slot === slotIndex);
-                        
                         if (targetTeamIdx !== -1) {
                             const oldSlot = newTeams[targetTeamIdx].slot;
                             if (occupyingTeamIdx !== -1 && occupyingTeamIdx !== targetTeamIdx) {
@@ -735,28 +737,14 @@
             const handleCreateTournament = (e) => {
                 e.preventDefault();
                 if (!newTourneyName || !newTourneyDate || !newTourneyDeadline) return;
-                
                 const newTourney = {
-                    id: Date.now(),
-                    name: newTourneyName,
-                    date: newTourneyDate,
-                    registrationDeadline: newTourneyDeadline,
-                    price: newTourneyPrice,
-                    maxTeams: newTourneyMaxTeams,
-                    numCourts: newTourneyCourts,
-                    paymentLink: newTourneyPaymentLink,
-                    status: 'open',
-                    teams: [],
-                    matches: []
+                    id: Date.now(), name: newTourneyName, date: newTourneyDate, registrationDeadline: newTourneyDeadline,
+                    price: newTourneyPrice, maxTeams: newTourneyMaxTeams, numCourts: newTourneyCourts, paymentLink: newTourneyPaymentLink,
+                    status: 'open', teams: [], matches: []
                 };
-                
                 updateTournaments(prev => [...prev, newTourney]);
                 setActiveAdminId(newTourney.id);
-                setNewTourneyName('');
-                setNewTourneyDate('');
-                setNewTourneyDeadline('');
-                setNewTourneyPrice(20);
-                setNewTourneyPaymentLink('');
+                setNewTourneyName(''); setNewTourneyDate(''); setNewTourneyDeadline(''); setNewTourneyPrice(20); setNewTourneyPaymentLink('');
             };
 
             const togglePayment = (tourneyId, team) => {
@@ -765,19 +753,97 @@
                     const newTeams = t.teams.map(tm => tm.id === team.id ? { ...tm, paid: true } : tm);
                     return { ...t, teams: newTeams };
                 }));
-
-                // Simulation visuelle de l'envoi de l'email
                 const targetEmail = team.email ? team.email : "l'équipe";
-                setNotification(`Paiement validé pour ${team.name}. Un e-mail de confirmation a été envoyé à ${targetEmail}.`);
+                setNotification(`Paiement validé pour ${team.name}. Un e-mail a été envoyé à ${targetEmail}.`);
                 setTimeout(() => setNotification(''), 6000);
             };
 
-            const activeMatches = activeTourney?.matches.filter(m => m.status === 'playing') || [];
-            const readyMatches = activeTourney?.matches.filter(m => m.status === 'ready') || [];
+            const startEditingMatch = (match) => {
+                setEditingMatchId(match.id);
+                setEditWinner(match.winner);
+                setEditScore(match.score);
+            };
 
+            const saveEditingMatch = (matchId) => {
+                editPastMatch(activeTourney.id, matchId, editWinner, editScore);
+                setEditingMatchId(null);
+            };
+
+            // ---- MODAL DU RAPPORT ET CLASSEMENT ----
+            let rankings = [];
+            if (activeTourney && activeTourney.status !== 'open') {
+                const maxRound = Math.max(0, ...activeTourney.matches.map(m => m.round));
+                const finalMatches = activeTourney.matches.filter(m => m.round === maxRound);
+                finalMatches.sort((a, b) => (a.blockTopRank || 0) - (b.blockTopRank || 0)).forEach(m => {
+                    if (m.status === 'finished' && m.winner && m.score !== 'BYE') {
+                        const winner = m.team1?.id === m.winner ? m.team1 : m.team2;
+                        const loser = m.team1?.id === m.winner ? m.team2 : m.team1;
+                        if(winner && !winner.isBye) rankings.push({ rank: m.blockTopRank || '-', team: winner });
+                        if(loser && !loser.isBye) rankings.push({ rank: (m.blockTopRank || 0) + 1, team: loser });
+                    }
+                });
+                rankings = rankings.filter(r => !r.team.isBye);
+            }
+
+            const activeMatches = activeTourney?.matches.filter(m => m.status === 'playing') || [];
+            
             return (
                 <div className="space-y-8 relative">
-                    {/* TOAST DE NOTIFICATION EMAIL */}
+                    {/* MODAL RAPPORT */}
+                    {showSummary && activeTourney && (
+                        <div className="fixed inset-0 bg-white z-[100] overflow-y-auto text-black p-8 print:p-0">
+                            <div className="max-w-4xl mx-auto print:max-w-full">
+                                <div className="flex justify-between items-center mb-8 print-hide">
+                                    <button onClick={() => setShowSummary(false)} className="bg-gray-200 hover:bg-gray-300 text-black px-6 py-2 rounded-lg font-bold">Fermer</button>
+                                    <button onClick={() => window.print()} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                        Imprimer / Exporter PDF
+                                    </button>
+                                </div>
+                                <div className="text-center mb-10 border-b-4 border-gray-800 pb-6">
+                                    <h1 className="text-4xl font-black uppercase mb-2">{activeTourney.name}</h1>
+                                    <p className="text-xl text-gray-600">Rapport complet du tournoi & Classement Officiel</p>
+                                    <p className="text-sm text-gray-500 mt-2">Généré le {new Date().toLocaleDateString('fr-FR')}</p>
+                                </div>
+
+                                <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-2">Classement Final</h2>
+                                <table className="w-full mb-12 text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-100">
+                                            <th className="p-3 border border-gray-300">Rang</th>
+                                            <th className="p-3 border border-gray-300">Équipe</th>
+                                            <th className="p-3 border border-gray-300">Licences</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {rankings.length > 0 ? rankings.map((r, i) => (
+                                            <tr key={i} className="hover:bg-gray-50">
+                                                <td className="p-3 border border-gray-300 font-black text-lg">{r.rank}</td>
+                                                <td className="p-3 border border-gray-300 font-bold">{r.team.name}</td>
+                                                <td className="p-3 border border-gray-300 text-sm text-gray-600">{r.team.l1} / {r.team.l2}</td>
+                                            </tr>
+                                        )) : <tr><td colSpan="3" className="p-4 border border-gray-300 text-center italic text-gray-500">Le classement sera disponible une fois les derniers matchs terminés.</td></tr>}
+                                    </tbody>
+                                </table>
+
+                                <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-2">Historique de tous les Résultats</h2>
+                                <div className="space-y-2">
+                                    {activeTourney.matches.filter(m => m.status === 'finished' && m.score !== 'BYE').sort((a,b) => b.round - a.round).map(m => (
+                                        <div key={m.id} className="flex justify-between items-center border-b border-gray-200 pb-2 text-sm">
+                                            <span className="font-bold text-gray-600 w-1/3 truncate pr-2">{m.bracketName} - {m.title}</span>
+                                            <span className="w-1/3 text-center flex justify-center items-center gap-2">
+                                                <span className={m.winner === m.team1?.id ? 'font-bold text-green-700' : ''}>{m.team1?.name}</span>
+                                                <span className="text-[10px] text-gray-400">VS</span>
+                                                <span className={m.winner === m.team2?.id ? 'font-bold text-green-700' : ''}>{m.team2?.name}</span>
+                                            </span>
+                                            <span className="font-mono font-bold w-1/3 text-right">{m.score}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {notification && (
                         <div className="fixed bottom-6 right-6 bg-padel text-dark-bg font-black px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(190,242,100,0.4)] z-50 animate-bounce max-w-sm">
                             <div className="flex items-center gap-3">
@@ -799,50 +865,37 @@
                             <form onSubmit={handleCreateTournament} className="space-y-3 text-sm">
                                 <div><input type="text" placeholder="Nom du tournoi" required value={newTourneyName} onChange={e=>setNewTourneyName(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                 <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <label className="text-xs text-gray-500 mb-1 block">Date</label>
-                                        <input type="date" required value={newTourneyDate} onChange={e=>setNewTourneyDate(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label className="text-xs text-gray-500 mb-1 block">Limite Inscrip.</label>
-                                        <input type="date" required value={newTourneyDeadline} onChange={e=>setNewTourneyDeadline(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" />
-                                    </div>
+                                    <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Date</label><input type="date" required value={newTourneyDate} onChange={e=>setNewTourneyDate(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
+                                    <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Limite Inscrip.</label><input type="date" required value={newTourneyDeadline} onChange={e=>setNewTourneyDeadline(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                 </div>
+                                <div><label className="text-xs text-gray-500 mb-1 block">Prix / paire (€)</label><input type="number" min="0" required value={newTourneyPrice} onChange={e=>setNewTourneyPrice(parseInt(e.target.value) || 0)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
+                                <div><label className="text-xs text-gray-500 mb-1 block">Lien de paiement (Optionnel)</label><input type="url" placeholder="https://buy.stripe.com/..." value={newTourneyPaymentLink} onChange={e=>setNewTourneyPaymentLink(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                 <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <label className="text-xs text-gray-500 mb-1 block">Prix / paire (€)</label>
-                                        <input type="number" min="0" required value={newTourneyPrice} onChange={e=>setNewTourneyPrice(parseInt(e.target.value) || 0)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Lien de paiement (Stripe, Lydia, etc.) Optionnel</label>
-                                    <input type="url" placeholder="https://buy.stripe.com/..." value={newTourneyPaymentLink} onChange={e=>setNewTourneyPaymentLink(e.target.value)} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" />
-                                </div>
-                                <div className="flex gap-2">
-                                    <div className="flex-1">
-                                        <label className="text-xs text-gray-500 mb-1 block">Équipes max</label>
-                                        <input type="number" min="4" value={newTourneyMaxTeams} onChange={e=>setNewTourneyMaxTeams(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label className="text-xs text-gray-500 mb-1 block">Terrains</label>
-                                        <input type="number" min="1" value={newTourneyCourts} onChange={e=>setNewTourneyCourts(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" />
-                                    </div>
+                                    <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Équipes max</label><input type="number" min="4" value={newTourneyMaxTeams} onChange={e=>setNewTourneyMaxTeams(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
+                                    <div className="flex-1"><label className="text-xs text-gray-500 mb-1 block">Terrains</label><input type="number" min="1" value={newTourneyCourts} onChange={e=>setNewTourneyCourts(parseInt(e.target.value))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white" /></div>
                                 </div>
                                 <button type="submit" className="w-full bg-padel/20 hover:bg-padel/40 text-padel font-bold py-2 rounded transition-colors mt-2">Créer le tournoi</button>
                             </form>
                         </div>
 
-                        <div className="glass-panel p-5 rounded-xl lg:col-span-2 flex flex-col justify-center">
+                        <div className="glass-panel p-5 rounded-xl lg:col-span-2 flex flex-col justify-center relative">
                             <h3 className="font-bold text-gray-300 mb-3">Tournoi en cours de gestion</h3>
-                            <select value={activeAdminId} onChange={e => setActiveAdminId(Number(e.target.value))} className="w-full bg-dark-card border border-padel text-white text-lg font-bold rounded-lg px-4 py-3 focus:outline-none">
-                                {tournaments.map(t => <option key={t.id} value={t.id}>{t.name} — {t.status === 'open' ? 'Inscriptions' : 'Lancé'}</option>)}
-                            </select>
+                            <div className="flex gap-3 items-center">
+                                <select value={activeAdminId} onChange={e => setActiveAdminId(Number(e.target.value))} className="flex-1 bg-dark-card border border-padel text-white text-lg font-bold rounded-lg px-4 py-3 focus:outline-none">
+                                    {tournaments.map(t => <option key={t.id} value={t.id}>{t.name} — {t.status === 'open' ? 'Inscriptions' : 'Lancé'}</option>)}
+                                    {tournaments.length === 0 && <option value="">Aucun tournoi</option>}
+                                </select>
+                                {activeTourney && (
+                                    <button onClick={() => deleteTournament(activeTourney.id)} className="bg-red-900/50 border border-red-800 text-red-500 hover:bg-red-600 hover:text-white p-3 rounded-lg transition-colors" title="Supprimer ce tournoi définitivement">
+                                        <IconTrash />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {!activeTourney ? null : activeTourney.status === 'open' ? (
                         <>
-                            {/* NOUVEAU MODULE : PLACEMENT MANUEL & TÊTES DE SÉRIES */}
                             <div className="glass-panel p-6 rounded-xl mb-8 border-t-4 border-t-padel">
                                 <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
                                     <div>
@@ -852,44 +905,23 @@
                                             Pour <strong>exempter une équipe</strong> (lui faire passer le premier tour), placez-la contre <strong>--- Vide (BYE) ---</strong>.
                                         </p>
                                     </div>
-                                    <div className="text-padel font-bold bg-padel/10 px-4 py-2 rounded-lg text-sm whitespace-nowrap">
-                                        Arbre de {p2} équipes
-                                    </div>
+                                    <div className="text-padel font-bold bg-padel/10 px-4 py-2 rounded-lg text-sm whitespace-nowrap">Arbre de {p2} équipes</div>
                                 </div>
-                                
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                     {Array.from({ length: p2 / 2 }).map((_, matchIdx) => {
-                                        const slot1 = matchIdx * 2;
-                                        const slot2 = matchIdx * 2 + 1;
-                                        const team1 = computedSlots[slot1];
-                                        const team2 = computedSlots[slot2];
-
+                                        const slot1 = matchIdx * 2; const slot2 = matchIdx * 2 + 1;
+                                        const team1 = computedSlots[slot1]; const team2 = computedSlots[slot2];
                                         return (
                                             <div key={matchIdx} className="bg-dark-bg border border-dark-border rounded-lg p-4 flex flex-col gap-2 shadow-lg relative">
                                                 <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Match {matchIdx + 1}</div>
-                                                
-                                                <select 
-                                                    value={team1 ? team1.id : ''} 
-                                                    onChange={e => handleSlotChange(slot1, e.target.value)}
-                                                    className={`w-full border rounded px-2 py-2 text-sm focus:outline-none transition-colors cursor-pointer ${team1 ? 'bg-dark-card border-padel/50 text-white font-medium' : 'bg-dark-bg border-dark-border text-gray-600 italic'}`}
-                                                >
+                                                <select value={team1 ? team1.id : ''} onChange={e => handleSlotChange(slot1, e.target.value)} className={`w-full border rounded px-2 py-2 text-sm focus:outline-none transition-colors cursor-pointer ${team1 ? 'bg-dark-card border-padel/50 text-white font-medium' : 'bg-dark-bg border-dark-border text-gray-600 italic'}`}>
                                                     <option value="">--- Vide (BYE) ---</option>
-                                                    {activeTourney.teams.map(t => (
-                                                        <option key={t.id} value={t.id}>{t.name}</option>
-                                                    ))}
+                                                    {activeTourney.teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                 </select>
-                                                
                                                 <div className="text-center text-[10px] text-gray-600 font-black">VS</div>
-                                                
-                                                <select 
-                                                    value={team2 ? team2.id : ''} 
-                                                    onChange={e => handleSlotChange(slot2, e.target.value)}
-                                                    className={`w-full border rounded px-2 py-2 text-sm focus:outline-none transition-colors cursor-pointer ${team2 ? 'bg-dark-card border-padel/50 text-white font-medium' : 'bg-dark-bg border-dark-border text-gray-600 italic'}`}
-                                                >
+                                                <select value={team2 ? team2.id : ''} onChange={e => handleSlotChange(slot2, e.target.value)} className={`w-full border rounded px-2 py-2 text-sm focus:outline-none transition-colors cursor-pointer ${team2 ? 'bg-dark-card border-padel/50 text-white font-medium' : 'bg-dark-bg border-dark-border text-gray-600 italic'}`}>
                                                     <option value="">--- Vide (BYE) ---</option>
-                                                    {activeTourney.teams.map(t => (
-                                                        <option key={t.id} value={t.id}>{t.name}</option>
-                                                    ))}
+                                                    {activeTourney.teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                 </select>
                                             </div>
                                         );
@@ -902,23 +934,12 @@
                                     <h3 className="text-xl font-bold mb-4 border-b border-dark-border pb-2">Configuration de "{activeTourney.name}"</h3>
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="col-span-2">
-                                                <label className="block text-sm text-gray-400 mb-1">Lien de paiement</label>
-                                                <input type="url" value={activeTourney.paymentLink || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, paymentLink: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm text-gray-400 mb-1">Date</label>
-                                                <input type="date" value={activeTourney.date || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, date: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm text-gray-400 mb-1">Limite inscrip.</label>
-                                                <input type="date" value={activeTourney.registrationDeadline || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, registrationDeadline: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" />
-                                            </div>
+                                            <div className="col-span-2"><label className="block text-sm text-gray-400 mb-1">Lien de paiement</label><input type="url" value={activeTourney.paymentLink || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, paymentLink: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" /></div>
+                                            <div><label className="block text-sm text-gray-400 mb-1">Date</label><input type="date" value={activeTourney.date || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, date: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" /></div>
+                                            <div><label className="block text-sm text-gray-400 mb-1">Limite inscrip.</label><input type="date" value={activeTourney.registrationDeadline || ''} onChange={e => updateTournaments(tournaments.map(t => t.id === activeTourney.id ? {...t, registrationDeadline: e.target.value} : t))} className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white text-sm" /></div>
                                         </div>
                                         <div className="pt-4">
-                                            <button onClick={() => startTournament(activeTourney.id)} className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-bold py-3 rounded-lg uppercase tracking-wide shadow-[0_0_15px_rgba(190,242,100,0.2)]">
-                                                Lancer l'Arbre du Tournoi
-                                            </button>
+                                            <button onClick={() => startTournament(activeTourney.id)} className="w-full bg-padel hover:bg-padel-dark text-dark-bg font-bold py-3 rounded-lg uppercase tracking-wide shadow-[0_0_15px_rgba(190,242,100,0.2)]">Lancer l'Arbre du Tournoi</button>
                                         </div>
                                     </div>
                                 </div>
@@ -926,9 +947,7 @@
                                 <div className="glass-panel p-6 rounded-xl">
                                     <h3 className="text-xl font-bold mb-4 border-b border-dark-border pb-2 flex justify-between">
                                         <span>Équipes inscrites</span>
-                                        <span className={activeTourney.teams.length >= activeTourney.maxTeams ? "text-red-400" : "text-padel"}>
-                                            {activeTourney.teams.length} / {activeTourney.maxTeams}
-                                        </span>
+                                        <span className={activeTourney.teams.length >= activeTourney.maxTeams ? "text-red-400" : "text-padel"}>{activeTourney.teams.length} / {activeTourney.maxTeams}</span>
                                     </h3>
                                     <ul className="space-y-2 max-h-64 overflow-y-auto pr-2">
                                         {activeTourney.teams.map((t, idx) => (
@@ -939,10 +958,7 @@
                                                     {t.email && <div className="text-[10px] text-padel font-mono mt-0.5">{t.email}</div>}
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    {t.paid ? 
-                                                        <span className="text-xs bg-green-900/50 text-green-400 px-2 py-1 rounded uppercase">Payé</span> : 
-                                                        <button onClick={() => togglePayment(activeTourney.id, t)} className="text-xs bg-yellow-900/50 text-yellow-400 hover:bg-yellow-800/50 px-2 py-1 rounded uppercase transition-colors">Valider Paiement</button>
-                                                    }
+                                                    {t.paid ? <span className="text-xs bg-green-900/50 text-green-400 px-2 py-1 rounded uppercase">Payé</span> : <button onClick={() => togglePayment(activeTourney.id, t)} className="text-xs bg-yellow-900/50 text-yellow-400 hover:bg-yellow-800/50 px-2 py-1 rounded uppercase transition-colors">Valider Paiement</button>}
                                                 </div>
                                             </li>
                                         ))}
@@ -966,8 +982,7 @@
 
                             <div>
                                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-padel">
-                                    <span className="w-2 h-2 rounded-full bg-padel animate-pulse"></span>
-                                    Matchs en cours sur les terrains ({activeMatches.length}/{activeTourney.numCourts})
+                                    <span className="w-2 h-2 rounded-full bg-padel animate-pulse"></span> Matchs en cours ({activeMatches.length}/{activeTourney.numCourts})
                                 </h3>
                                 {activeMatches.length === 0 ? (
                                     <p className="text-gray-500 italic glass-panel p-6 rounded-xl text-center">Aucun match en cours. Le tournoi est peut-être terminé.</p>
@@ -1004,6 +1019,83 @@
                                         ))}
                                     </div>
                                 )}
+                            </div>
+
+                            {/* NOUVEAU MODULE : HISTORIQUE ET EDITION */}
+                            <div className="mt-16 border-t border-dark-border pt-8">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                                    <h3 className="text-xl font-bold flex items-center gap-2 text-white">
+                                        <IconSettings /> Historique & Édition des Scores
+                                    </h3>
+                                    <button onClick={() => setShowSummary(true)} className="bg-padel hover:bg-padel-dark text-dark-bg px-6 py-2 rounded-lg font-bold shadow-lg transition-colors flex items-center gap-2">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 3v5h5"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                                        Rapport & Classement Final
+                                    </button>
+                                </div>
+                                
+                                <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto border border-dark-border">
+                                    <table className="w-full text-left text-sm text-gray-300">
+                                        <thead className="bg-dark-card border-b border-dark-border text-xs uppercase text-gray-500">
+                                            <tr>
+                                                <th className="p-4">Tour & Catégorie</th>
+                                                <th className="p-4 text-center min-w-[250px]">Équipes</th>
+                                                <th className="p-4 text-center">Score</th>
+                                                <th className="p-4 text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-dark-border">
+                                            {activeTourney.matches.filter(m => m.status === 'finished' && m.score !== 'BYE').sort((a,b)=> b.round - a.round).map(m => (
+                                                <tr key={m.id} className="hover:bg-dark-card/50 transition-colors">
+                                                    <td className="p-4 whitespace-nowrap">
+                                                        <div className="font-bold text-white">{m.bracketName}</div>
+                                                        <div className="text-xs text-gray-500">{m.title}</div>
+                                                    </td>
+                                                    <td className="p-4">
+                                                        {editingMatchId === m.id ? (
+                                                            <div className="flex justify-center items-center gap-2">
+                                                                <label className={`cursor-pointer px-2 py-1 rounded text-xs border ${editWinner === m.team1?.id ? 'bg-padel text-dark-bg border-padel font-bold' : 'bg-dark-bg border-dark-border text-gray-400'}`}>
+                                                                    <input type="radio" className="hidden" checked={editWinner === m.team1?.id} onChange={() => setEditWinner(m.team1?.id)} />
+                                                                    {m.team1?.name}
+                                                                </label>
+                                                                <span className="text-gray-600 text-[10px] font-black">VS</span>
+                                                                <label className={`cursor-pointer px-2 py-1 rounded text-xs border ${editWinner === m.team2?.id ? 'bg-padel text-dark-bg border-padel font-bold' : 'bg-dark-bg border-dark-border text-gray-400'}`}>
+                                                                    <input type="radio" className="hidden" checked={editWinner === m.team2?.id} onChange={() => setEditWinner(m.team2?.id)} />
+                                                                    {m.team2?.name}
+                                                                </label>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex justify-center items-center gap-3">
+                                                                <span className={`truncate ${m.winner === m.team1?.id ? 'text-padel font-bold' : ''}`}>{m.team1?.name}</span>
+                                                                <span className="text-gray-600 text-[10px] font-black">VS</span>
+                                                                <span className={`truncate ${m.winner === m.team2?.id ? 'text-padel font-bold' : ''}`}>{m.team2?.name}</span>
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-4 text-center">
+                                                        {editingMatchId === m.id ? (
+                                                            <input type="text" value={editScore} onChange={e => setEditScore(e.target.value)} className="bg-dark-bg border border-padel rounded px-2 py-1 text-white font-mono text-center w-full focus:outline-none" />
+                                                        ) : (
+                                                            <span className="font-mono font-bold text-white whitespace-nowrap">{m.score}</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-4 text-right">
+                                                        {editingMatchId === m.id ? (
+                                                            <div className="flex justify-end gap-2">
+                                                                <button onClick={() => setEditingMatchId(null)} className="text-gray-400 hover:text-white px-2 py-1 text-xs font-bold">Annuler</button>
+                                                                <button onClick={() => saveEditingMatch(m.id)} className="bg-padel text-dark-bg px-3 py-1 rounded text-xs font-bold shadow">Sauver</button>
+                                                            </div>
+                                                        ) : (
+                                                            <button onClick={() => startEditingMatch(m)} className="text-padel hover:text-padel-light underline text-xs font-bold">Modifier</button>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {activeTourney.matches.filter(m => m.status === 'finished' && m.score !== 'BYE').length === 0 && (
+                                                <tr><td colSpan="4" className="p-6 text-center text-gray-500 italic">Aucun match terminé pour le moment.</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -1077,42 +1169,63 @@
             const [activeLiveId, setActiveLiveId] = useState(1);
             const [activeAdminId, setActiveAdminId] = useState(1);
 
-            const applyMatchResult = (matchesState, matchId, winnerId, score) => {
-                let updated = [...matchesState];
-                const matchIndex = updated.findIndex(m => m.id === matchId);
-                const match = updated[matchIndex];
+            // NOUVEL ALGORITHME : RECONSTRUCTION GLOBALE
+            const rebuildMatches = (matches) => {
+                let updated = JSON.parse(JSON.stringify(matches));
                 
-                match.winner = winnerId;
-                match.score = score;
-                match.status = 'finished';
-                
-                const winnerTeam = match.team1?.id === winnerId ? match.team1 : match.team2;
-                const loserTeam = match.team1?.id === winnerId ? match.team2 : match.team1;
+                // 1. Réinitialiser les équipes au-delà du Tour 0
+                updated.forEach(m => {
+                    if (m.round > 0) {
+                        m.team1 = null; m.team2 = null;
+                    }
+                    if (m.status === 'ready' || m.status === 'playing') {
+                        m.status = 'pending';
+                    }
+                });
 
-                if (match.nextMatchId) {
-                    const nextIdx = updated.findIndex(m => m.id === match.nextMatchId);
-                    if (nextIdx !== -1) {
-                        if (match.blockMatchIdx % 2 === 0) updated[nextIdx].team1 = winnerTeam;
-                        else updated[nextIdx].team2 = winnerTeam;
-                    }
-                }
-                if (match.nextLoserMatchId && loserTeam) {
-                    const nextLoserIdx = updated.findIndex(m => m.id === match.nextLoserMatchId);
-                    if (nextLoserIdx !== -1) {
-                        if (match.blockMatchIdx % 2 === 0) updated[nextLoserIdx].team1 = loserTeam;
-                        else updated[nextLoserIdx].team2 = loserTeam;
-                    }
+                // 2. Propager tour par tour
+                const maxRound = Math.max(0, ...updated.map(m => m.round));
+                for (let r = 0; r <= maxRound; r++) {
+                    const roundMatches = updated.filter(m => m.round === r);
+                    roundMatches.forEach(match => {
+                        // Un match avec deux équipes devient Prêt
+                        if (match.team1 && match.team2 && match.status === 'pending') {
+                            if (match.team1.isBye || match.team2.isBye) {
+                                match.status = 'finished';
+                                match.score = 'BYE';
+                                match.winner = match.team1.isBye ? match.team2.id : match.team1.id;
+                            } else {
+                                match.status = 'ready';
+                            }
+                        }
+
+                        // Si le match est fini, on envoie le vainqueur et perdant au tour suivant
+                        if (match.status === 'finished' && match.winner) {
+                            const winnerTeam = match.team1?.id === match.winner ? match.team1 : match.team2;
+                            const loserTeam = match.team1?.id === match.winner ? match.team2 : match.team1;
+
+                            if (match.nextMatchId) {
+                                const n = updated.find(x => x.id === match.nextMatchId);
+                                if (n) {
+                                    if (match.blockMatchIdx % 2 === 0) n.team1 = winnerTeam;
+                                    else n.team2 = winnerTeam;
+                                }
+                            }
+                            if (match.nextLoserMatchId && loserTeam) {
+                                const n = updated.find(x => x.id === match.nextLoserMatchId);
+                                if (n) {
+                                    if (match.blockMatchIdx % 2 === 0) n.team1 = loserTeam;
+                                    else n.team2 = loserTeam;
+                                }
+                            }
+                        }
+                    });
                 }
                 return updated;
             };
 
             const assignCourts = (currentMatches, numCourts) => {
                 let updated = [...currentMatches];
-                updated.forEach(m => {
-                    if (m.status === 'pending' && m.team1 && m.team2 && !m.team1.isBye && !m.team2.isBye) {
-                        m.status = 'ready';
-                    }
-                });
                 const playing = updated.filter(m => m.status === 'playing');
                 const usedCourts = playing.map(m => m.courtId);
                 const availableCourts = Array.from({length: numCourts}, (_, i) => i + 1).filter(id => !usedCourts.includes(id));
@@ -1129,53 +1242,26 @@
                 return updated;
             };
 
-            const resolveByesAndAssign = (initialMatches, numCourts) => {
-                let currentMatches = [...initialMatches];
-                let changed = true;
-                while(changed) {
-                    changed = false;
-                    for (let i = 0; i < currentMatches.length; i++) {
-                        const m = currentMatches[i];
-                        if (m.status !== 'finished' && m.team1 && m.team2 && (m.team1.isBye || m.team2.isBye)) {
-                            const winner = m.team1.isBye && !m.team2.isBye ? m.team2.id : m.team1.id;
-                            currentMatches = applyMatchResult(currentMatches, m.id, winner, 'BYE');
-                            changed = true;
-                            break;
-                        }
-                    }
-                }
-                return assignCourts(currentMatches, numCourts);
-            };
-
             const startTournament = (tourneyId) => {
                 const tourney = tournaments.find(t => t.id === tourneyId);
                 if(tourney.teams.length < 3) { alert("Il faut au moins 3 équipes."); return; }
                 const p2 = Math.pow(2, Math.ceil(Math.log2(Math.max(4, tourney.teams.length))));
                 
-                // Préparation des équipes selon les emplacements choisis
                 let paddedTeams = Array(p2).fill(null);
                 let unassignedTeams = [];
                 
                 tourney.teams.forEach(t => {
-                    if (t.slot >= 0 && t.slot < p2 && paddedTeams[t.slot] === null) {
-                        paddedTeams[t.slot] = t;
-                    } else {
-                        unassignedTeams.push(t);
-                    }
+                    if (t.slot >= 0 && t.slot < p2 && paddedTeams[t.slot] === null) paddedTeams[t.slot] = t;
+                    else unassignedTeams.push(t);
                 });
                 
                 unassignedTeams.forEach(t => {
                     const emptyIdx = paddedTeams.indexOf(null);
-                    if (emptyIdx !== -1) {
-                        paddedTeams[emptyIdx] = t;
-                    }
+                    if (emptyIdx !== -1) paddedTeams[emptyIdx] = t;
                 });
 
-                // Comble les trous par des "BYE"
                 for (let i = 0; i < p2; i++) {
-                    if (paddedTeams[i] === null) {
-                        paddedTeams[i] = { id: `bye-${i}`, name: 'Exempté (BYE)', isBye: true };
-                    }
+                    if (paddedTeams[i] === null) paddedTeams[i] = { id: `bye-${i}`, name: 'Exempté (BYE)', isBye: true };
                 }
 
                 let newMatches = [];
@@ -1209,7 +1295,7 @@
                                 id: `R${r}-M${matchIdx}`, bracket: block.id, bracketName: block.name, round: r,
                                 matchIdx: matchIdx, blockMatchIdx: m, title: title, team1: t1, team2: t2,
                                 winner: null, score: '', status: 'pending', courtId: null, startTime: null,
-                                nextMatchId: nextMatchId, nextLoserMatchId: nextLoserMatchId
+                                nextMatchId: nextMatchId, nextLoserMatchId: nextLoserMatchId, blockTopRank: block.topRank
                             });
                         }
 
@@ -1228,7 +1314,7 @@
                     currentBlocks = nextBlocks;
                 }
 
-                const finalMatches = resolveByesAndAssign(newMatches, tourney.numCourts);
+                const finalMatches = assignCourts(rebuildMatches(newMatches), tourney.numCourts);
                 updateTournaments(prev => prev.map(t => t.id === tourneyId ? { ...t, status: 'started', matches: finalMatches } : t));
             };
 
@@ -1244,10 +1330,33 @@
                 const tourney = tournaments.find(t => t.id === tourneyId);
                 const match = tourney.matches.find(m => m.id === matchId);
                 if (!match.winner) { alert("Veuillez sélectionner l'équipe gagnante avant de valider."); return; }
-                const updatedMatches = applyMatchResult(tourney.matches, matchId, match.winner, match.score);
-                const finalMatches = resolveByesAndAssign(updatedMatches, tourney.numCourts);
                 
-                updateTournaments(prev => prev.map(t => t.id === tourneyId ? { ...t, matches: finalMatches } : t));
+                updateTournaments(prev => prev.map(t => {
+                    if (t.id !== tourneyId) return t;
+                    let updatedMatches = JSON.parse(JSON.stringify(t.matches));
+                    const m = updatedMatches.find(x => x.id === matchId);
+                    m.winner = match.winner;
+                    m.score = match.score;
+                    m.status = 'finished';
+
+                    updatedMatches = assignCourts(rebuildMatches(updatedMatches), t.numCourts);
+                    return { ...t, matches: updatedMatches };
+                }));
+            };
+
+            const editPastMatch = (tourneyId, matchId, newWinnerId, newScore) => {
+                updateTournaments(prev => prev.map(t => {
+                    if (t.id !== tourneyId) return t;
+                    let updatedMatches = JSON.parse(JSON.stringify(t.matches));
+                    const m = updatedMatches.find(x => x.id === matchId);
+                    if (m) {
+                        m.winner = newWinnerId || null;
+                        m.score = newScore || '';
+                        m.status = newWinnerId ? 'finished' : 'pending'; 
+                    }
+                    updatedMatches = assignCourts(rebuildMatches(updatedMatches), t.numCourts);
+                    return { ...t, matches: updatedMatches };
+                }));
             };
 
             const updateActiveNumCourts = (tourneyId, newNumCourts) => {
@@ -1261,18 +1370,30 @@
                 }));
             };
 
+            const deleteTournament = (id) => {
+                if (window.confirm("⚠️ Êtes-vous sûr de vouloir supprimer définitivement ce tournoi ? Cette action est irréversible et supprimera toutes les données associées.")) {
+                    updateTournaments(prev => {
+                        const filtered = prev.filter(t => t.id !== id);
+                        if (filtered.length > 0) {
+                            setActiveAdminId(filtered[0].id);
+                            setActiveLiveId(filtered[0].id);
+                        } else {
+                            setActiveAdminId('');
+                            setActiveLiveId('');
+                        }
+                        return filtered;
+                    });
+                }
+            };
+
             return (
                 <div className="min-h-screen pb-20">
-                    <nav className="border-b border-dark-border bg-dark-card/80 backdrop-blur-md sticky top-0 z-50">
+                    <nav className="border-b border-dark-border bg-dark-card/80 backdrop-blur-md sticky top-0 z-50 print-hide">
                         <div className="max-w-6xl mx-auto px-4">
                             <div className="flex justify-between items-center h-16">
                                 <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setView('home')}>
-                                    <div className="w-8 h-8 rounded-full bg-padel flex items-center justify-center text-dark-bg font-black text-xs">
-                                        TCM
-                                    </div>
-                                    <span className="font-bold text-xl tracking-tight text-white hidden sm:inline-block">
-                                        TC MÂCON <span className="text-padel">PADEL</span>
-                                    </span>
+                                    <div className="w-8 h-8 rounded-full bg-padel flex items-center justify-center text-dark-bg font-black text-xs">TCM</div>
+                                    <span className="font-bold text-xl tracking-tight text-white hidden sm:inline-block">TC MÂCON <span className="text-padel">PADEL</span></span>
                                 </div>
                                 <div className="hidden md:flex space-x-1">
                                     <NavBtn active={view === 'register'} onClick={() => setView('register')} icon={<IconUser/>}>Inscription</NavBtn>
@@ -1289,21 +1410,22 @@
                         </div>
                     </nav>
 
-                    <main className="max-w-6xl mx-auto px-4 mt-8">
-                        {view === 'home' && <HomeView setView={setView} />}
-                        {view === 'register' && <RegisterView tournaments={tournaments} updateTournaments={updateTournaments} setView={setView} />}
-                        {view === 'live' && <LiveView tournaments={tournaments} activeLiveId={activeLiveId} setActiveLiveId={setActiveLiveId} />}
-                        {view === 'score' && <ScoreView 
+                    <main className="max-w-6xl mx-auto px-4 mt-8 print:p-0 print:m-0 print:max-w-full">
+                        <div className={view !== 'home' ? 'print-hide' : ''}>{view === 'home' && <HomeView setView={setView} />}</div>
+                        <div className={view !== 'register' ? 'print-hide' : ''}>{view === 'register' && <RegisterView tournaments={tournaments} updateTournaments={updateTournaments} setView={setView} />}</div>
+                        <div className={view !== 'live' ? 'print-hide' : ''}>{view === 'live' && <LiveView tournaments={tournaments} activeLiveId={activeLiveId} setActiveLiveId={setActiveLiveId} />}</div>
+                        <div className={view !== 'score' ? 'print-hide' : ''}>{view === 'score' && <ScoreView 
                             tournaments={tournaments} activeLiveId={activeLiveId} setActiveLiveId={setActiveLiveId}
                             updateMatchDraft={updateMatchDraft} submitMatchResult={submitMatchResult}
                             scoreAuth={scoreAuth} setScoreAuth={setScoreAuth}
-                        />}
-                        {view === 'admin' && <AdminView 
+                        />}</div>
+                        <div className={view !== 'admin' ? '' : 'print-hide'}>{view === 'admin' && <AdminView 
                             tournaments={tournaments} updateTournaments={updateTournaments}
                             activeAdminId={activeAdminId} setActiveAdminId={setActiveAdminId}
                             startTournament={startTournament} updateMatchDraft={updateMatchDraft} submitMatchResult={submitMatchResult}
                             adminAuth={adminAuth} setAdminAuth={setAdminAuth} updateActiveNumCourts={updateActiveNumCourts}
-                        />}
+                            deleteTournament={deleteTournament} editPastMatch={editPastMatch}
+                        />}</div>
                     </main>
                 </div>
             );
