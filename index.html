@@ -464,7 +464,6 @@
         const LiveView = ({ tournaments, activeLiveId, setActiveLiveId }) => {
             const [tick, setTick] = useState(0);
             
-            // Forcer un rafraîchissement toutes les 30 secondes pour mettre à jour l'échéancier
             useEffect(() => {
                 const timer = setInterval(() => setTick(t => t + 1), 30000);
                 return () => clearInterval(timer);
@@ -477,14 +476,12 @@
             let fullSchedule = [];
             
             if (activeTourney.status === 'started' && activeTourney.matches) {
-                // Groupes pour l'affichage visuel
                 activeTourney.matches.forEach(m => {
                     if (!bracketGroups.find(g => g.id === m.bracket)) {
                         bracketGroups.push({ id: m.bracket, name: m.bracketName });
                     }
                 });
 
-                // Calcul intelligent de l'échéancier prévisionnel global
                 const now = Date.now();
                 const playingMatches = activeTourney.matches.filter(m => m.status === 'playing');
                 const upcomingMatches = activeTourney.matches.filter(m => m.status === 'ready' || m.status === 'pending')
@@ -498,24 +495,26 @@
                         return a.matchIdx - b.matchIdx;
                     });
 
-                // On initialise le temps de dispo de chaque terrain avec l'heure de fin estimée des matchs en cours
-                let courtTimes = playingMatches.map(m => Math.max(now, (m.startTime || now) + 45 * 60000));
-                // Les terrains vides sont dispos "maintenant"
-                while (courtTimes.length < activeTourney.numCourts) {
-                    courtTimes.push(now);
+                // Calcul intelligent : On se base UNIQUEMENT sur les terrains valides (1 à numCourts)
+                let courtTimes = [];
+                for (let i = 1; i <= activeTourney.numCourts; i++) {
+                    const playingOnThisCourt = playingMatches.find(m => m.courtId === i);
+                    if (playingOnThisCourt) {
+                        courtTimes.push(Math.max(now, (playingOnThisCourt.startTime || now) + 45 * 60000));
+                    } else {
+                        courtTimes.push(now);
+                    }
                 }
-                courtTimes.sort((a, b) => a - b); // On trie du terrain dispo le plus tôt au plus tard
+                courtTimes.sort((a, b) => a - b);
 
                 upcomingMatches.forEach(m => {
-                    const estStart = courtTimes[0]; // On prend le 1er terrain dispo
+                    const estStart = courtTimes[0]; 
                     fullSchedule.push({ ...m, estStart });
-                    // On met à jour la dispo de ce terrain (il sera pris 45min de plus)
                     courtTimes[0] = estStart + 45 * 60000; 
-                    courtTimes.sort((a, b) => a - b); // On re-trie
+                    courtTimes.sort((a, b) => a - b); 
                 });
             }
 
-            // On extrait uniquement les matchs "Ready" (dont on connait les équipes) pour les afficher en haut
             const readySchedule = fullSchedule.filter(m => m.status === 'ready');
 
             return (
